@@ -15,7 +15,7 @@ class SomeClass : public SomeInterface
 public:
     ~SomeClass() override
     {
-        std::cout << "Destructed" << std::endl;
+        std::cout << "Destroyed" << std::endl;
     }
 
 public:

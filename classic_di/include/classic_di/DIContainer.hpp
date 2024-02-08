@@ -52,7 +52,6 @@ private:
         SingletonDependenciesMap&& singleton_dependencies,
         TransientDependenciesMap&& transient_dependency_creators
     )
-
         : singleton_dependencies_        { std::move(singleton_dependencies) }
         , transient_dependency_creators_ { std::move(transient_dependency_creators) }
     {}
