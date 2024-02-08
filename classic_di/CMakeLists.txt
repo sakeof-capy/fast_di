@@ -8,6 +8,8 @@ set(LIBRARY_NAME classic_di)
 
 add_library(${LIBRARY_NAME} STATIC ${SOURCES})
 
+add_executable(${LIBRARY_NAME}_EXE ${SOURCES})
+
 target_include_directories(${LIBRARY_NAME} PRIVATE
         $<BUILD_INTERFACE:
         ${CMAKE_CURRENT_SOURCE_DIR}/include/private/${LIBRARY_NAME}
