@@ -68,8 +68,8 @@ class DIContainerBuilder
 {
 public:
 
-    template<typename Interface, typename Dependency>
-    DIContainerBuilder& add_singleton()
+    template<typename Dependency, typename Interface = Dependency>
+    DIContainerBuilder& register_singleton()
     {
         singleton_dependencies_[std::type_index(typeid(Interface))] = []() {
             static Dependency instance{};
@@ -78,8 +78,8 @@ public:
         return *this;
     }
 
-    template<typename Interface, typename Dependency>
-    DIContainerBuilder& add_transient()
+    template<typename Dependency, typename Interface = Dependency>
+    DIContainerBuilder& register_transient()
     {
         transient_dependency_creators_[std::type_index(typeid(Interface))] = []() {
             return std::make_shared<Dependency>();
@@ -125,7 +125,8 @@ public:
 int main()
 {
     DIContainer container = DIContainerBuilder{}
-        .add_transient<SomeInterface, SomeClass>()
+        .register_transient<SomeClass, SomeInterface>()
+        .register_singleton<int>()
         .build();
 
     SomeInterface& int_ref = container.resolve<SomeInterface>();
@@ -136,5 +137,8 @@ int main()
 
     SomeInterface& int_ref3 = container.resolve<SomeInterface>();
     int_ref.some_method();
+
+    int& injected_int = container.resolve<int>();
+    std::cout << injected_int << std::endl;
     return EXIT_SUCCESS;
 }
