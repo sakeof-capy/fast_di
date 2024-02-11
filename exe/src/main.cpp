@@ -1,6 +1,7 @@
 #include <iostream>
 #include "classic_di/DIContainerBuilder.hpp"
 
+
 class SomeInterface
 {
 public:
@@ -25,24 +26,88 @@ public:
     }
 };
 
+///////////
+
+template<typename...>
+struct pack {};
+
+template<typename T>
+struct function_traits;
+
+template<typename ReturnValue_, typename... Params_>
+struct function_traits<ReturnValue_(Params_...)>
+{
+    using ReturnValue = ReturnValue_;
+    using Params = pack<Params_...>;
+};
+
+template<typename Head, typename... Tail>
+void print_type_names()
+{
+    std::cout << typeid(Head).name() << std::endl;
+
+    if constexpr (sizeof...(Tail) > 0)
+    {
+        print_type_names<Tail...>();
+    }
+}
+
+template<typename... Pack>
+void print_type_names_pack(pack<Pack...>)
+{
+    print_type_names<Pack...>();
+}
+
+struct SomeType
+{
+    static int some_func(int y, double x, SomeClass)
+    {
+        return 0;
+    }
+};
+
+template<typename T>
+void print_type_names_of_some_func()
+{
+    using params = typename function_traits<decltype(T::some_func)>::Params;
+    print_type_names_pack(params{});
+}
+
+///////////
+
+
+
+int some_func(double y, int x, SomeClass)
+{
+    return 0;
+}
+
+
 int main()
 {
-    DIContainer container = DIContainerBuilder{}
-            .register_singleton<SomeClass, SomeInterface>()
-            .register_singleton<int>()
-            .build();
+//    using ret = typename function_traits<decltype(some_func)>::ReturnValue;
+//    static_assert(std::is_same_v<ret, int>);
+//    function_traits<decltype(some_func)>::print_params();
 
-    SomeInterface& some_class_ref1 = container.resolve<SomeInterface>();
-    some_class_ref1.some_method();
+    print_type_names_of_some_func<SomeType>();
 
-    SomeInterface& some_class_ref2 = container.resolve<SomeInterface>();
-    some_class_ref2.some_method();
+    // std::allocator_traits<int>
+    // DIContainer container = DIContainerBuilder{}
+    //         .register_transient<SomeClass, SomeInterface>()
+    //         .register_singleton<int>()
+    //         .build();
 
-    SomeInterface& some_class_ref3 = container.resolve<SomeInterface>();
-    some_class_ref3.some_method();
+    // SomeInterface& some_class_ref1 = container.resolve<SomeInterface>();
+    // some_class_ref1.some_method();
 
-    int& injected_int = container.resolve<int>();
-    std::cout << injected_int << std::endl;
+    // SomeInterface& some_class_ref2 = container.resolve<SomeInterface>();
+    // some_class_ref2.some_method();
+
+    // SomeInterface& some_class_ref3 = container.resolve<SomeInterface>();
+    // some_class_ref3.some_method();
+
+    // int& injected_int = container.resolve<int>();
+    // std::cout << injected_int << std::endl;
 
     return EXIT_SUCCESS;
 }
