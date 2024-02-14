@@ -8,8 +8,6 @@
 #include <memory>
 #include <tuple>
 
-#include <iostream>
-
 #include "FunctionTypeTraits.hpp"
 
 class DIContainerBuilder;
@@ -41,9 +39,6 @@ public:
     template<typename Dependency>
     Dependency& resolve() const
     {
-        print_transient_deps();
-
-
         auto found = singleton_dependencies_.find(typeid(Dependency));
         if (found != singleton_dependencies_.cend())
         {
@@ -59,27 +54,17 @@ public:
         throw std::runtime_error("Non-registered dependency.");
     }
 
-    void print_transient_deps() const
-    {
-        std::cout << "Transient Dependencies: ";
-        for (auto& [a, b] : transient_dependency_creators_)
-        {
-            std::cout << a.name() << ' ';
-        }
-        std::cout << std::endl;
-    }
-
 private: // Producers for builder
     template<typename Dependency>
     SingletonCreator produce_singleton_creator() const
     {
-        return []() {
-            static Dependency instance{};
+        return [this]() {
+            auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
+            auto resolved_creator_args = ResolveCreatorArgs(creator_args_pack);
+            static Dependency instance = std::apply(Dependency::create, resolved_creator_args);
             return &instance;
         };
     }
-
-
 
     template<typename Dependency>
     TransientCreator produce_transient_creator() const
@@ -87,8 +72,7 @@ private: // Producers for builder
         return [this]() {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
             auto resolved_creator_args = ResolveCreatorArgs(creator_args_pack);
-            std::cout << "TUPLE SIZEE = " << std::tuple_size_v<decltype(resolved_creator_args)> << std::endl;
-            return nullptr;//std::apply(std::make_shared<Dependency>, resolved_creator_args);
+            return std::make_shared<Dependency>(std::apply(Dependency::create, resolved_creator_args));
         };
     }
 
@@ -121,7 +105,6 @@ private: // Producers for builder
         std::tuple<AccumulatedDependencies...>&& accumulated_result
     ) const
     {
-        std::cout << "CURRENT DEPENDENCY: " << typeid(Dependency).name() << std::endl;
         std::tuple<Dependency> resolved_dependency = std::make_tuple(resolve<Dependency>());
         auto concatenated_accumulator = std::tuple_cat(accumulated_result, std::move(resolved_dependency));
 
@@ -146,7 +129,7 @@ private: // Map fillers for builder
         transient_dependency_creators_[dependency_key] = std::move(creator);
     }
 
-private:
+public:
     DIContainer() = default;
     friend DIContainerBuilder;
 

@@ -42,30 +42,22 @@ private:
     OtherClass a_;
 };
 
-///////////
-
-
-
-
 int main()
 {
-    DIContainer container = DIContainerBuilder{}
-            .register_transient<SomeClass, SomeInterface>()
+    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
+            .register_singleton<SomeClass, SomeInterface>()
             .register_transient<OtherClass>()
             .build();
 
-    container.print_transient_deps();
-    SomeInterface& some_class_ref1 = container.resolve<SomeInterface>();
+    SomeInterface& some_class_ref1 = container->resolve<SomeInterface>();
     some_class_ref1.some_method();
 
-    SomeInterface& some_class_ref2 = container.resolve<SomeInterface>();
+    SomeInterface& some_class_ref2 = container->resolve<SomeInterface>();
     some_class_ref2.some_method();
 
-    SomeInterface& some_class_ref3 = container.resolve<SomeInterface>();
+    SomeInterface& some_class_ref3 = container->resolve<SomeInterface>();
     some_class_ref3.some_method();
 
-    int& injected_int = container.resolve<int>();
-    std::cout << injected_int << std::endl;
 
     return EXIT_SUCCESS;
 }
