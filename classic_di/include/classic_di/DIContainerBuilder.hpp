@@ -1,21 +1,19 @@
+#ifndef DI_CONTAINER_BUILDER_HPP_
+#define DI_CONTAINER_BUILDER_HPP_
+
 #include <unordered_map>
 #include <functional>
 #include <vector>
 #include <typeindex>
 #include <memory>
 
-#include "DIContainer.hpp"
-
 #include <iostream>
+
+#include "DIContainer.hpp"
 
 class DIContainerBuilder
 {
-private:
-    using SingletonDependenciesMap = std::unordered_map<std::type_index, std::function<void*()>>;
-    using TransientDependenciesMap = std::unordered_map<std::type_index, std::function<std::shared_ptr<void>()>>;
-
 public:
-
     template<typename Dependency, typename Interface = Dependency>
     decltype(auto) register_singleton() &&
     {
@@ -42,40 +40,35 @@ public:
 
     DIContainer build() &&
     {
-        return DIContainer { std::move(singleton_dependencies_),
-                             std::move(transient_dependency_creators_) };
+        std::cout << "BUILT" << std::endl;
+        DIContainer built_container = std::move(container_);
+        container_ = DIContainer{};
+        return built_container;
     }
 
     DIContainer build() &
     {
-        SingletonDependenciesMap singleton_dependencies { singleton_dependencies_ };
-        TransientDependenciesMap transient_dependency_creators { transient_dependency_creators_ };
-        return DIContainer { std::move(singleton_dependencies),
-                             std::move(transient_dependency_creators) };
+        std::cout << "BUILT" << std::endl;
+        return container_;
     }
 
 private:
-
     template<typename Dependency, typename Interface, typename Self>
     Self&& register_singleton_impl(Self&& self)
     {
-        self.singleton_dependencies_[std::type_index(typeid(Interface))] = []() {
-            static Dependency instance{};
-            return &instance;
-        };
+        self.container_.add_singleton_dependency(typeid(Interface), container_.produce_singleton_creator<Dependency>());
         return std::forward<Self>(self);
     }
 
     template<typename Dependency, typename Interface, typename Self>
     Self&& register_transient_impl(Self&& self)
     {
-        self.transient_dependency_creators_[std::type_index(typeid(Interface))] = []() {
-            return std::make_shared<Dependency>();
-        };
+        self.container_.add_transient_dependency(typeid(Interface), container_.produce_transient_creator<Dependency>());
         return std::forward<Self>(self);
     }
 
 private:
-    SingletonDependenciesMap singleton_dependencies_;
-    TransientDependenciesMap transient_dependency_creators_;
+    DIContainer container_;
 };
+
+#endif //DI_CONTAINER_BUILDER_HPP_
