@@ -85,29 +85,24 @@ int some_func(double y, int x, SomeClass)
 
 int main()
 {
-//    using ret = typename function_traits<decltype(some_func)>::ReturnValue;
-//    static_assert(std::is_same_v<ret, int>);
-//    function_traits<decltype(some_func)>::print_params();
-
     print_type_names_of_some_func<SomeType>();
 
-    // std::allocator_traits<int>
-    // DIContainer container = DIContainerBuilder{}
-    //         .register_transient<SomeClass, SomeInterface>()
-    //         .register_singleton<int>()
-    //         .build();
+    DIContainer container = DIContainerBuilder{}
+            .register_transient<SomeClass, SomeInterface>()
+            .register_singleton<int>()
+            .build();
 
-    // SomeInterface& some_class_ref1 = container.resolve<SomeInterface>();
-    // some_class_ref1.some_method();
+    SomeInterface& some_class_ref1 = container.resolve<SomeInterface>();
+    some_class_ref1.some_method();
 
-    // SomeInterface& some_class_ref2 = container.resolve<SomeInterface>();
-    // some_class_ref2.some_method();
+    SomeInterface& some_class_ref2 = container.resolve<SomeInterface>();
+    some_class_ref2.some_method();
 
-    // SomeInterface& some_class_ref3 = container.resolve<SomeInterface>();
-    // some_class_ref3.some_method();
+    SomeInterface& some_class_ref3 = container.resolve<SomeInterface>();
+    some_class_ref3.some_method();
 
-    // int& injected_int = container.resolve<int>();
-    // std::cout << injected_int << std::endl;
+    int& injected_int = container.resolve<int>();
+    std::cout << injected_int << std::endl;
 
     return EXIT_SUCCESS;
 }
