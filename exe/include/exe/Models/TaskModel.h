@@ -1,0 +1,40 @@
+#ifndef DI_CONTAINERS_TASKMODEL_H
+#define DI_CONTAINERS_TASKMODEL_H
+
+#include <string>
+
+class TaskModel
+{
+public:
+    void set_name(const std::string& name)
+    {
+        name_ = name;
+    }
+
+    void set_executant(const std::string& executant)
+    {
+        executant_ = executant;
+    }
+
+    const std::string& get_name() const noexcept
+    {
+        return name_;
+    }
+
+    const std::string& get_executant() const noexcept
+    {
+        return executant_;
+    }
+
+public:
+    static TaskModel create()
+    {
+        return {};
+    }
+
+private:
+    std::string name_;
+    std::string executant_;
+};
+
+#endif //DI_CONTAINERS_TASKMODEL_H

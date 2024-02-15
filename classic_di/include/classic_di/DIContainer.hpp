@@ -82,7 +82,7 @@ private: // Producers for builder
     }
 
     template<typename Dependency, typename... OtherDependencies>
-    std::tuple<Dependency, OtherDependencies...> ResolveCreatorArgs(TypeTraits::pack<Dependency, OtherDependencies...>) const
+    auto ResolveCreatorArgs(TypeTraits::pack<Dependency, OtherDependencies...>) const
     {
         return ResolveCreatorArgsImpl<Dependency>
             (
@@ -98,25 +98,42 @@ private: // Producers for builder
         typename... AccumulatedDependencies, template<typename...> typename AccumulatedDependenciesPack,
         typename... OtherDependencies, template<typename...> typename OtherDependenciesPack
     >
-    std::tuple<Dependency, OtherDependencies...> ResolveCreatorArgsImpl
+    auto ResolveCreatorArgsImpl
     (
         AccumulatedDependenciesPack<AccumulatedDependencies...> accumulated_dependencies_pack,
         OtherDependenciesPack<OtherDependencies...> other_dependencies_pack,
         std::tuple<AccumulatedDependencies...>&& accumulated_result
     ) const
     {
-        std::tuple<Dependency> resolved_dependency = std::make_tuple(resolve<Dependency>());
+        auto resolved_dependency = std::make_tuple(resolve<Dependency>());
         auto concatenated_accumulator = std::tuple_cat(accumulated_result, std::move(resolved_dependency));
 
         if constexpr (sizeof...(OtherDependencies) > 0)
         {
-            return ResolveCreatorArgsImpl<OtherDependencies...>(std::move(concatenated_accumulator));
+            return ResolveCreatorArgsImpl<typename HeadOfImpl<OtherDependencies...>::HeadOf>(
+                    AccumulatedDependenciesPack<AccumulatedDependencies..., Dependency>{},
+                    extract_tail<OtherDependencies...>(),
+                    std::move(concatenated_accumulator)
+            );
         }
         else
         {
             return std::move(concatenated_accumulator);
         }
     }
+
+    template<typename Head, typename...>
+    struct HeadOfImpl
+    {
+        using HeadOf = Head;
+    };
+
+    template<typename, typename... Tail>
+    static TypeTraits::pack<Tail...> extract_tail()
+    {
+        return {};
+    }
+
 
 private: // Map fillers for builder
     void add_singleton_dependency(std::type_index dependency_key, SingletonCreator&& producer)

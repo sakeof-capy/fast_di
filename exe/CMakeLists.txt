@@ -6,5 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB SOURCES src/*.cpp)
 set(EXECUTABLE_NAME classic_di_exe)
 
-add_executable(${EXECUTABLE_NAME} ${SOURCES})
+add_executable(${EXECUTABLE_NAME} ${SOURCES}
+        src/DebugPrinter.cpp
+)
 target_link_libraries(${EXECUTABLE_NAME} classic_di)
