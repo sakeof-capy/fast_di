@@ -42,6 +42,6 @@ private:
     TaskModel model_;
     PostgreSQLDatabase database_;
     FileLogger logger_;
-};
+}; // TaskController
 
 #endif //DI_CONTAINERS_TASKCONTROLLER_H

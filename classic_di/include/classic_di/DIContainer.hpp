@@ -37,7 +37,15 @@ private:
 
 public:
     template<typename Dependency>
+        requires (!std::is_reference_v<Dependency>)
     Dependency& resolve() const
+    {
+        return resolve_impl<Dependency>();
+    }
+
+private:
+    template<typename Dependency>
+    Dependency& resolve_impl() const
     {
         auto found = singleton_dependencies_.find(typeid(Dependency));
         if (found != singleton_dependencies_.cend())
@@ -84,10 +92,10 @@ private: // Producers for builder
     template<typename Dependency, typename... OtherDependencies>
     auto ResolveCreatorArgs(TypeTraits::pack<Dependency, OtherDependencies...>) const
     {
-        return ResolveCreatorArgsImpl<Dependency>
+        return ResolveCreatorArgsImpl<std::remove_reference_t<Dependency>>
             (
                 TypeTraits::pack<>{},
-                TypeTraits::pack<OtherDependencies...>{},
+                TypeTraits::pack<std::remove_reference_t<OtherDependencies>...>{},
                 std::tuple<>{}
             );
     }
@@ -105,7 +113,7 @@ private: // Producers for builder
         std::tuple<AccumulatedDependencies...>&& accumulated_result
     ) const
     {
-        auto resolved_dependency = std::make_tuple(resolve<Dependency>());
+        std::tuple<Dependency&> resolved_dependency{resolve<Dependency>()};
         auto concatenated_accumulator = std::tuple_cat(accumulated_result, std::move(resolved_dependency));
 
         if constexpr (sizeof...(OtherDependencies) > 0)
