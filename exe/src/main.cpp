@@ -1,15 +1,34 @@
 #include <iostream>
 #include "classic_di/DIContainerBuilder.hpp"
-
 #include "../include/exe/Application.h"
+#include "classic_di/type_traits/TypeLists.hpp"
 
-class Dependency
+class SomeInterface
+{
+public:
+    virtual ~SomeInterface() = default;
+
+public:
+    virtual void do_smth() = 0;
+};
+
+class Dependency : public SomeInterface
 {
 public:
     static Dependency create()
     {
         return Dependency{};
     }
+
+public:
+    ~Dependency() override = default;
+
+public:
+    void do_smth() override
+    {
+        std::cout << "WORKS~!!!!" << std::endl;
+    }
+
 public:
     int x = 0;
 };
@@ -17,19 +36,40 @@ public:
 class App
 {
 public:
-    explicit App(Dependency& dependency) : dependency_ { dependency } {}
+    explicit App(SomeInterface& dependency) : dependency_ { dependency } {}
 
 public:
-    static App create(Dependency& dependency)
+    static App create(SomeInterface& dependency)
     {
         return App { dependency };
     }
 
+public:
+    void use()
+    {
+        dependency_.do_smth();
+    }
+
 private:
-    Dependency& dependency_;
+    SomeInterface& dependency_;
 };
 
-
+template<typename T>
+struct Mapper
+{
+    constexpr auto operator()() const
+    {
+        if constexpr (std::is_same_v<T, int>)
+        {
+            std::cout << typeid(T).name() << std::endl;
+            return 20;
+        }
+        else
+        {
+            return "Not int";
+        }
+    }
+};
 int main()
 {
 //    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
@@ -41,14 +81,14 @@ int main()
 //            .register_transient<TaskModel>()
 //            .register_singleton<Application>()
 //            .build();
+//
+//    Application& app = container->resolve<Application>();
+//    app.run();
 
-    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
-            .register_singleton<App>()
-            .register_singleton<Dependency>()
-            .build();
-
-    Application& app = container->resolve<Application>();
-    app.run();
-
+   using Mapper = decltype([]<typename T>() { return typeid(T).name(); });
+    auto res = TypeTraits::map_to_tuple(TypeTraits::pack<int, float>{}, []<typename T>() { return typeid(T).name(); });
+    std::cout << get<0>(res) << std::endl;
+    std::cout << get<1>(res) << std::endl;
+//    TypeTraits::ReturnValueOf<Mapper<int>>;
     return EXIT_SUCCESS;
 }

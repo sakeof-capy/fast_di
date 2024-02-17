@@ -1,11 +1,10 @@
 #ifndef FUNCTION_TYPE_TRAITS_HPP_
 #define FUNCTION_TYPE_TRAITS_HPP_
 
+#include "Pack.hpp"
+
 namespace TypeTraits
 {
-
-template<typename...>
-struct pack {};
 
 template<typename T>
 struct function_traits;
