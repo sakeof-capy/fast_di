@@ -85,10 +85,10 @@ int main()
 //    Application& app = container->resolve<Application>();
 //    app.run();
 
-   using Mapper = decltype([]<typename T>() { return typeid(T).name(); });
-    auto res = TypeTraits::map_to_tuple(TypeTraits::pack<int, float>{}, []<typename T>() { return typeid(T).name(); });
-    std::cout << get<0>(res) << std::endl;
-    std::cout << get<1>(res) << std::endl;
-//    TypeTraits::ReturnValueOf<Mapper<int>>;
+//    auto res = TypeTraits::map_to_tuple(TypeTraits::pack<int, float>{}, []<typename T>() { return typeid(T).name(); });
+//    std::cout << get<0>(res) << std::endl;
+//    std::cout << get<1>(res) << std::endl;
+
+    TypeTraits::for_each(TypeTraits::pack<int, float>{}, []<typename T>() { std::cout << typeid(T).name() << std::endl; });
     return EXIT_SUCCESS;
 }

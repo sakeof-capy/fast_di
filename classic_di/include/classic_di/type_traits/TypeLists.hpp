@@ -12,17 +12,17 @@ namespace Private
 
 template
 <
-    template<typename> typename Processor,
-    typename Current,
-    typename... Other
+    typename Processor,
+    typename Head,
+    typename... Tail
 >
-constexpr void for_each_impl()
+constexpr void for_each_impl(Processor&& processor)
 {
-    Processor<Current>();
+    processor.template operator()<Head>();
 
-    if constexpr (sizeof...(Other) > 0)
+    if constexpr (sizeof...(Tail) > 0)
     {
-        for_each_impl<Other...>();
+        for_each_impl<Processor, Tail...>(std::forward<Processor>(processor));
     }
 }
 #include <iostream>
@@ -66,22 +66,12 @@ using HeadOf = Head;
 
 template
 <
-    template<typename> typename Processor,
-    typename... TypeList
+    typename... TypeList, template<typename> typename Pack,
+    typename Processor
 >
-constexpr void for_each()
+constexpr void for_each(Pack<TypeList...>&&, Processor&& processor)
 {
-    Private::for_each_impl<Processor, TypeList...>();
-}
-
-template
-<
-    template<typename> typename Processor,
-    typename... TypeList
->
-constexpr void for_each_in_pack(pack<TypeList...>)
-{
-    Private::for_each_impl<Processor, TypeList...>();
+    Private::for_each_impl<Processor, TypeList...>(std::forward<Processor>(processor));
 }
 
 template
