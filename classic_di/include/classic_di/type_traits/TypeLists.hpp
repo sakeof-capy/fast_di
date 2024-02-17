@@ -25,31 +25,38 @@ constexpr void for_each_impl(Processor&& processor)
         for_each_impl<Processor, Tail...>(std::forward<Processor>(processor));
     }
 }
-#include <iostream>
+
+
+
+template
+<
+    typename Mapper,
+    typename AccumulatedResult
+>
+constexpr auto map_to_tuple_impl(pack<>, Mapper&&, AccumulatedResult&& accumulator)
+{
+    return std::forward<AccumulatedResult>(accumulator);
+}
+
 template
 <
     typename Mapper,
     typename AccumulatedResult,
     typename Head, typename... TypeList
 >
-constexpr auto map_to_tuple_impl(Mapper&& mapper, AccumulatedResult&& accumulator)
+constexpr auto map_to_tuple_impl(pack<Head, TypeList...>, Mapper&& mapper, AccumulatedResult&& accumulator)
     //-> std::tuple<ReturnValueOf<Mapper<Head>>, ReturnValueOf<Mapper<TypeList>>...>
 {
-    auto mapped_value = mapper.template operator()<Head>();
-    std::cout << "Mapped value = " << mapped_value << std::endl;
+    decltype(auto) mapped_value = mapper.template operator()<Head>();
     std::tuple<decltype(mapped_value)> mapped_head(mapped_value);
     auto head_concatenated_with_accumulator = std::tuple_cat(accumulator, mapped_head);
 
     if constexpr (sizeof... (TypeList) > 0)
     {
         return map_to_tuple_impl
-        <
-            Mapper,
-            decltype(head_concatenated_with_accumulator),
-            TypeList...
-        >
         (
-                std::forward<Mapper>(mapper),
+            pack<TypeList...>{},
+            std::forward<Mapper>(mapper),
             std::move(head_concatenated_with_accumulator)
         );
     }
@@ -66,7 +73,7 @@ using HeadOf = Head;
 
 template
 <
-    typename... TypeList, template<typename> typename Pack,
+    typename... TypeList, template<typename...> typename Pack,
     typename Processor
 >
 constexpr void for_each(Pack<TypeList...>&&, Processor&& processor)
@@ -76,13 +83,13 @@ constexpr void for_each(Pack<TypeList...>&&, Processor&& processor)
 
 template
 <
-    typename... TypeList, template<typename> typename Pack,
+    typename... TypeList, template<typename...> typename Pack,
     typename Mapper
 >
 constexpr auto map_to_tuple(Pack<TypeList...>&&, Mapper&& mapper) //-> std::tuple<ReturnValueOf<decltype(Mapper::template operator()<TypeList>)>...>
 {
     using EmptyTupleType = std::tuple<>;
-    return Private::map_to_tuple_impl<decltype(mapper), EmptyTupleType, TypeList...>(std::forward<Mapper>(mapper), EmptyTupleType{});
+    return Private::map_to_tuple_impl(pack<TypeList...>{}, std::forward<Mapper>(mapper), EmptyTupleType{});
 }
 
 

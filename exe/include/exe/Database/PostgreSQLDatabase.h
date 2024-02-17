@@ -10,7 +10,7 @@
 class PostgreSQLDatabase : public IDatabase
 {
 public:
-    explicit PostgreSQLDatabase(FileLogger logger)
+    explicit PostgreSQLDatabase(FileLogger& logger)
         : logger_ { logger }
     {
         logger_.log("Connected to PostgreSQL database.");
@@ -28,13 +28,13 @@ public:
     }
 
 public:
-    static PostgreSQLDatabase create(FileLogger logger)
+    static PostgreSQLDatabase create(FileLogger& logger)
     {
         return PostgreSQLDatabase { logger };
     }
 
 private:
-    FileLogger logger_;
+    FileLogger& logger_;
 };
 
 #endif //DI_CONTAINERS_POSTGRESQLDATABASE_H

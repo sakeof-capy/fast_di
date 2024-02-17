@@ -8,7 +8,8 @@
 #include <memory>
 #include <tuple>
 
-#include "FunctionTypeTraits.hpp"
+#include "type_traits/FunctionTypeTraits.hpp"
+#include "type_traits/TypeLists.hpp"
 
 class DIContainerBuilder;
 
@@ -37,9 +38,9 @@ private:
 
 public:
     template<typename Dependency>
-        requires (!std::is_reference_v<Dependency>)
     Dependency& resolve() const
     {
+        static_assert(!std::is_reference_v<Dependency>, "Cannot resolve a reference type.");
         return resolve_impl<Dependency>();
     }
 
@@ -84,64 +85,13 @@ private: // Producers for builder
         };
     }
 
-    std::tuple<> ResolveCreatorArgs(TypeTraits::pack<>) const
+    template<typename... ArgTypes>
+    auto ResolveCreatorArgs(TypeTraits::pack<ArgTypes...>) const
     {
-        return std::make_tuple();
+        return TypeTraits::map_to_tuple(TypeTraits::pack<ArgTypes...>{}, [this]<typename Arg>() -> Arg& {
+            return resolve<std::remove_reference_t<Arg>>();
+        });
     }
-
-    template<typename Dependency, typename... OtherDependencies>
-    auto ResolveCreatorArgs(TypeTraits::pack<Dependency, OtherDependencies...>) const
-    {
-        return ResolveCreatorArgsImpl<std::remove_reference_t<Dependency>>
-            (
-                TypeTraits::pack<>{},
-                TypeTraits::pack<std::remove_reference_t<OtherDependencies>...>{},
-                std::tuple<>{}
-            );
-    }
-
-    template
-    <
-        typename Dependency,
-        typename... AccumulatedDependencies, template<typename...> typename AccumulatedDependenciesPack,
-        typename... OtherDependencies, template<typename...> typename OtherDependenciesPack
-    >
-    auto ResolveCreatorArgsImpl
-    (
-        AccumulatedDependenciesPack<AccumulatedDependencies...> accumulated_dependencies_pack,
-        OtherDependenciesPack<OtherDependencies...> other_dependencies_pack,
-        std::tuple<AccumulatedDependencies...>&& accumulated_result
-    ) const
-    {
-        std::tuple<Dependency&> resolved_dependency{resolve<Dependency>()};
-        auto concatenated_accumulator = std::tuple_cat(accumulated_result, std::move(resolved_dependency));
-
-        if constexpr (sizeof...(OtherDependencies) > 0)
-        {
-            return ResolveCreatorArgsImpl<typename HeadOfImpl<OtherDependencies...>::HeadOf>(
-                    AccumulatedDependenciesPack<AccumulatedDependencies..., Dependency>{},
-                    extract_tail<OtherDependencies...>(),
-                    std::move(concatenated_accumulator)
-            );
-        }
-        else
-        {
-            return std::move(concatenated_accumulator);
-        }
-    }
-
-    template<typename Head, typename...>
-    struct HeadOfImpl
-    {
-        using HeadOf = Head;
-    };
-
-    template<typename, typename... Tail>
-    static TypeTraits::pack<Tail...> extract_tail()
-    {
-        return {};
-    }
-
 
 private: // Map fillers for builder
     void add_singleton_dependency(std::type_index dependency_key, SingletonCreator&& producer)

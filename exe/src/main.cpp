@@ -54,41 +54,43 @@ private:
     SomeInterface& dependency_;
 };
 
-template<typename T>
-struct Mapper
+
+template<typename... T>
+void f(TypeTraits::pack<T...>)
 {
-    constexpr auto operator()() const
-    {
-        if constexpr (std::is_same_v<T, int>)
-        {
-            std::cout << typeid(T).name() << std::endl;
-            return 20;
-        }
-        else
-        {
-            return "Not int";
-        }
-    }
-};
+    return;
+}
+
 int main()
 {
+    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
+            .register_singleton<PostgreSQLDatabase>()
+            .register_singleton<FileLogger>()
+            .register_singleton<UserController>()
+            .register_singleton<TaskController>()
+            .register_transient<UserModel>()
+            .register_transient<TaskModel>()
+            .register_singleton<Application>()
+            .build();
+
+    Application& app = container->resolve<Application>();
+    app.run();
+
 //    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
-//            .register_singleton<PostgreSQLDatabase>()
-//            .register_singleton<FileLogger>()
-//            .register_singleton<UserController>()
-//            .register_singleton<TaskController>()
-//            .register_transient<UserModel>()
-//            .register_transient<TaskModel>()
-//            .register_singleton<Application>()
+//            .register_singleton<App>()
+//            .register_singleton<Dependency, SomeInterface>()
 //            .build();
-//
-//    Application& app = container->resolve<Application>();
-//    app.run();
+
+//    App& app = container->resolve<App>();
+//    app.use();
 
 //    auto res = TypeTraits::map_to_tuple(TypeTraits::pack<int, float>{}, []<typename T>() { return typeid(T).name(); });
 //    std::cout << get<0>(res) << std::endl;
 //    std::cout << get<1>(res) << std::endl;
 
-    TypeTraits::for_each(TypeTraits::pack<int, float>{}, []<typename T>() { std::cout << typeid(T).name() << std::endl; });
+//    int a = 2;
+//    auto res = TypeTraits::map_to_tuple(TypeTraits::pack<>{}, [&a]<typename T>() -> int& { std::cout << typeid(T).name() << a << std::endl; return a;});
+////    std::cout << get<0>(res) << std::endl;
+////    std::cout << get<1>(res) << std::endl;
     return EXIT_SUCCESS;
 }

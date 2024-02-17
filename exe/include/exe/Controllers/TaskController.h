@@ -8,7 +8,7 @@
 class TaskController
 {
 public:
-    TaskController(TaskModel model, PostgreSQLDatabase database, FileLogger logger)
+    TaskController(TaskModel& model, PostgreSQLDatabase& database, FileLogger& logger)
         : model_ { model }
         , database_ { database }
         , logger_ { logger }
@@ -33,15 +33,15 @@ public:
     }
 
 public:
-    static TaskController create(TaskModel model, PostgreSQLDatabase database, FileLogger logger)
+    static TaskController create(TaskModel& model, PostgreSQLDatabase& database, FileLogger& logger)
     {
         return { model, database, logger };
     }
 
 private:
-    TaskModel model_;
-    PostgreSQLDatabase database_;
-    FileLogger logger_;
+    TaskModel& model_;
+    PostgreSQLDatabase& database_;
+    FileLogger& logger_;
 }; // TaskController
 
 #endif //DI_CONTAINERS_TASKCONTROLLER_H

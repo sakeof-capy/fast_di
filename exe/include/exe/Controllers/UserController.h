@@ -8,7 +8,7 @@
 class UserController
 {
 public:
-    UserController(UserModel model, PostgreSQLDatabase database, FileLogger logger)
+    UserController(UserModel& model, PostgreSQLDatabase& database, FileLogger& logger)
             : model_ { model }
             , database_ { database }
             , logger_ { logger }
@@ -33,15 +33,15 @@ public:
     }
 
 public:
-    static UserController create(UserModel model, PostgreSQLDatabase database, FileLogger logger)
+    static UserController create(UserModel& model, PostgreSQLDatabase& database, FileLogger& logger)
     {
         return UserController { model, database, logger };
     }
 
 private:
-    UserModel model_;
-    PostgreSQLDatabase database_;
-    FileLogger logger_;
+    UserModel& model_;
+    PostgreSQLDatabase& database_;
+    FileLogger& logger_;
 };
 
 #endif //DI_CONTAINERS_USERCONTROLLER_H

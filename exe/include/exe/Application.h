@@ -10,7 +10,7 @@
 class Application
 {
 public:
-    Application(TaskController task_controller, UserController user_controller, FileLogger logger)
+    Application(TaskController& task_controller, UserController& user_controller, FileLogger& logger)
         : task_controller_ { task_controller }
         , user_controller_ { user_controller }
         , logger_ { logger }
@@ -25,6 +25,7 @@ public:
         const std::string user_password_message = "user_password=";
         std::string input{};
 
+//        std::cout << &logger_ << std::endl;
         logger_.log("App started.");
 
         do {
@@ -63,15 +64,15 @@ private:
     }
 
 public:
-    static Application create(TaskController task_controller, UserController user_controller, FileLogger logger)
+    static Application create(TaskController& task_controller, UserController& user_controller, FileLogger& logger)
     {
         return { task_controller, user_controller, logger };
     }
 
 private:
-    TaskController task_controller_;
-    UserController user_controller_;
-    FileLogger logger_;
+    TaskController& task_controller_;
+    UserController& user_controller_;
+    FileLogger& logger_;
 };
 
 #endif //DI_CONTAINERS_APPLICATION_H
