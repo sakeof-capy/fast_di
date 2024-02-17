@@ -1,16 +1,16 @@
-#ifndef DI_CONTAINERS_APPLICATION_H
-#define DI_CONTAINERS_APPLICATION_H
+#ifndef DI_CONTAINERS_APPLICATION_HPP
+#define DI_CONTAINERS_APPLICATION_HPP
 
-#include "Controllers/TaskController.h"
-#include "Controllers/UserController.h"
-#include "Logger/FileLogger.h"
+#include "Controllers/TaskController.hpp"
+#include "Controllers/UserController.hpp"
+#include "Logger/ILogger.hpp"
 
 #include <iostream>
 
 class Application
 {
 public:
-    Application(TaskController& task_controller, UserController& user_controller, FileLogger& logger)
+    Application(TaskController& task_controller, UserController& user_controller, ILogger& logger)
         : task_controller_ { task_controller }
         , user_controller_ { user_controller }
         , logger_ { logger }
@@ -64,7 +64,7 @@ private:
     }
 
 public:
-    static Application create(TaskController& task_controller, UserController& user_controller, FileLogger& logger)
+    static Application create(TaskController& task_controller, UserController& user_controller, ILogger& logger)
     {
         return { task_controller, user_controller, logger };
     }
@@ -72,7 +72,7 @@ public:
 private:
     TaskController& task_controller_;
     UserController& user_controller_;
-    FileLogger& logger_;
+    ILogger& logger_;
 };
 
-#endif //DI_CONTAINERS_APPLICATION_H
+#endif //DI_CONTAINERS_APPLICATION_HPP

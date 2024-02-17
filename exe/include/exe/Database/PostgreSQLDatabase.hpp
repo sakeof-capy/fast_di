@@ -1,16 +1,16 @@
-#ifndef DI_CONTAINERS_POSTGRESQLDATABASE_H
-#define DI_CONTAINERS_POSTGRESQLDATABASE_H
+#ifndef DI_CONTAINERS_POSTGRESQLDATABASE_HPP
+#define DI_CONTAINERS_POSTGRESQLDATABASE_HPP
 
-#include "IDatabase.h"
-#include "../Logger/FileLogger.h"
-#include "../Models/TaskModel.h"
-#include "../Models/UserModel.h"
+#include "IDatabase.hpp"
+#include "../Logger/ILogger.hpp"
+#include "../Models/TaskModel.hpp"
+#include "../Models/UserModel.hpp"
 #include <iostream>
 
 class PostgreSQLDatabase : public IDatabase
 {
 public:
-    explicit PostgreSQLDatabase(FileLogger& logger)
+    explicit PostgreSQLDatabase(ILogger& logger)
         : logger_ { logger }
     {
         logger_.log("Connected to PostgreSQL database.");
@@ -28,13 +28,13 @@ public:
     }
 
 public:
-    static PostgreSQLDatabase create(FileLogger& logger)
+    static PostgreSQLDatabase create(ILogger& logger)
     {
         return PostgreSQLDatabase { logger };
     }
 
 private:
-    FileLogger& logger_;
+    ILogger& logger_;
 };
 
-#endif //DI_CONTAINERS_POSTGRESQLDATABASE_H
+#endif //DI_CONTAINERS_POSTGRESQLDATABASE_HPP

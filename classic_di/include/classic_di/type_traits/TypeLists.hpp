@@ -26,8 +26,6 @@ constexpr void for_each_impl(Processor&& processor)
     }
 }
 
-
-
 template
 <
     typename Mapper,

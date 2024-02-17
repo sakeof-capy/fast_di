@@ -1,5 +1,5 @@
-#ifndef DI_CONTAINERS_TASKMODEL_H
-#define DI_CONTAINERS_TASKMODEL_H
+#ifndef DI_CONTAINERS_TASKMODEL_HPP
+#define DI_CONTAINERS_TASKMODEL_HPP
 
 #include <string>
 
@@ -37,4 +37,4 @@ private:
     std::string executant_;
 };
 
-#endif //DI_CONTAINERS_TASKMODEL_H
+#endif //DI_CONTAINERS_TASKMODEL_HPP

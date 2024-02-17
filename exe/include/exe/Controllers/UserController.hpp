@@ -1,14 +1,14 @@
-#ifndef DI_CONTAINERS_USERCONTROLLER_H
-#define DI_CONTAINERS_USERCONTROLLER_H
+#ifndef DI_CONTAINERS_USERCONTROLLER_HPP
+#define DI_CONTAINERS_USERCONTROLLER_HPP
 
-#include "../Models/UserModel.h"
-#include "../Database/PostgreSQLDatabase.h"
-#include "../Logger/FileLogger.h"
+#include "../Models/UserModel.hpp"
+#include "../Database/IDatabase.hpp"
+#include "../Logger/ILogger.hpp"
 
 class UserController
 {
 public:
-    UserController(UserModel& model, PostgreSQLDatabase& database, FileLogger& logger)
+    UserController(UserModel& model, IDatabase& database, ILogger& logger)
             : model_ { model }
             , database_ { database }
             , logger_ { logger }
@@ -33,15 +33,15 @@ public:
     }
 
 public:
-    static UserController create(UserModel& model, PostgreSQLDatabase& database, FileLogger& logger)
+    static UserController create(UserModel& model, IDatabase& database, ILogger& logger)
     {
         return UserController { model, database, logger };
     }
 
 private:
     UserModel& model_;
-    PostgreSQLDatabase& database_;
-    FileLogger& logger_;
+    IDatabase& database_;
+    ILogger& logger_;
 };
 
-#endif //DI_CONTAINERS_USERCONTROLLER_H
+#endif //DI_CONTAINERS_USERCONTROLLER_HPP

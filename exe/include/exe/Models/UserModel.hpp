@@ -1,5 +1,5 @@
-#ifndef DI_CONTAINERS_USERMODEL_H
-#define DI_CONTAINERS_USERMODEL_H
+#ifndef DI_CONTAINERS_USERMODEL_HPP
+#define DI_CONTAINERS_USERMODEL_HPP
 
 #include <string>
 
@@ -37,4 +37,4 @@ private:
     std::string password_;
 };
 
-#endif //DI_CONTAINERS_USERMODEL_H
+#endif //DI_CONTAINERS_USERMODEL_HPP

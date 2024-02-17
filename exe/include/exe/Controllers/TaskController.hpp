@@ -1,14 +1,14 @@
-#ifndef DI_CONTAINERS_TASKCONTROLLER_H
-#define DI_CONTAINERS_TASKCONTROLLER_H
+#ifndef DI_CONTAINERS_TASKCONTROLLER_HPP
+#define DI_CONTAINERS_TASKCONTROLLER_HPP
 
-#include "../Models/TaskModel.h"
-#include "../Database/PostgreSQLDatabase.h"
-#include "../Logger/FileLogger.h"
+#include "../Models/TaskModel.hpp"
+#include "../Database/IDatabase.hpp"
+#include "../Logger/ILogger.hpp"
 
 class TaskController
 {
 public:
-    TaskController(TaskModel& model, PostgreSQLDatabase& database, FileLogger& logger)
+    TaskController(TaskModel& model, IDatabase& database, ILogger& logger)
         : model_ { model }
         , database_ { database }
         , logger_ { logger }
@@ -33,15 +33,15 @@ public:
     }
 
 public:
-    static TaskController create(TaskModel& model, PostgreSQLDatabase& database, FileLogger& logger)
+    static TaskController create(TaskModel& model, IDatabase& database, ILogger& logger)
     {
         return { model, database, logger };
     }
 
 private:
     TaskModel& model_;
-    PostgreSQLDatabase& database_;
-    FileLogger& logger_;
+    IDatabase& database_;
+    ILogger& logger_;
 }; // TaskController
 
-#endif //DI_CONTAINERS_TASKCONTROLLER_H
+#endif //DI_CONTAINERS_TASKCONTROLLER_HPP

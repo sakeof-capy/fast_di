@@ -1,7 +1,7 @@
-#ifndef DI_CONTAINERS_FILELOGGER_H
-#define DI_CONTAINERS_FILELOGGER_H
+#ifndef DI_CONTAINERS_FILELOGGER_HPP
+#define DI_CONTAINERS_FILELOGGER_HPP
 
-#include "ILogger.h"
+#include "ILogger.hpp"
 #include <iostream>
 
 class FileLogger : public ILogger
@@ -22,4 +22,4 @@ public:
     }
 };
 
-#endif //DI_CONTAINERS_FILELOGGER_H
+#endif //DI_CONTAINERS_FILELOGGER_HPP

@@ -1,5 +1,5 @@
-#ifndef DI_CONTAINERS_ILOGGER_H
-#define DI_CONTAINERS_ILOGGER_H
+#ifndef DI_CONTAINERS_ILOGGER_HPP
+#define DI_CONTAINERS_ILOGGER_HPP
 
 #include <string>
 
@@ -12,4 +12,4 @@ public:
     virtual void log(const std::string& message) = 0;
 };
 
-#endif //DI_CONTAINERS_ILOGGER_H
+#endif //DI_CONTAINERS_ILOGGER_HPP
