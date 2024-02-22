@@ -6,6 +6,9 @@
 #include <vector>
 #include <typeindex>
 #include <memory>
+
+#include <iostream>
+
 #include "DIContainer.hpp"
 
 class DIContainerBuilder
@@ -15,25 +18,25 @@ public:
 
 public:
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_singleton() &&
+    decltype(auto) register_singleton() &&
     {
         return register_singleton_impl<Dependency, Interface>(std::move(*this));
     }
 
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_singleton() &
+    decltype(auto) register_singleton() &
     {
         return register_singleton_impl<Dependency, Interface>(*this);
     }
 
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_transient() &
+    decltype(auto) register_transient() &
     {
         return register_transient_impl<Dependency, Interface>(*this);
     }
 
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_transient() &&
+    decltype(auto) register_transient() &&
     {
         return register_transient_impl<Dependency, Interface>(std::move(*this));
     }

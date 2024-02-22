@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="FileLogger">
+    <Position X="7" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>FileLogger.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IDatabase">
+    <Position X="5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IDatabase.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ILogger">
+    <Position X="7" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ILogger.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PostgreSQLDatabase">
+    <Position X="5" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAABAAAAAAABAEAAAAAg=</HashCode>
+      <FileName>PostgreSQLDatabase.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TaskController">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAABAAAAAIBAEAIIBAA=</HashCode>
+      <FileName>TaskController.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TaskModel">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAAAAgAAIAAABACIAAIAA=</HashCode>
+      <FileName>TaskModel.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserController">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAABAAAAAAAIAAAABAAAAAABAEAAIBAA=</HashCode>
+      <FileName>UserController.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserModel">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABACoAAIAA=</HashCode>
+      <FileName>UserModel.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Application">
+    <Position X="12.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAABAAAAIAAAAIAAAAAAAAAAAAAABAEAAgAAA=</HashCode>
+      <FileName>Application.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DIContainer">
+    <Position X="19.5" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>CAABAAAAAAAAAAAIgAAAgIDQAAAAEAAAAAAAABCAAAE=</HashCode>
+      <FileName>DIContainer.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DIContainerBuilder">
+    <Position X="22.75" Y="0.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAAABAAABAAAAICAAEAAABA=</HashCode>
+      <FileName>DIContainerBuilder.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
