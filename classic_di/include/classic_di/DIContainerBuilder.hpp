@@ -10,32 +10,36 @@
 
 class DIContainerBuilder
 {
+private:
+    using SingletonCreator = DIContainer::SingletonCreator;
+    using TransientCreator = DIContainer::TransientCreator;
+
 public:
     DIContainerBuilder() : container_ { std::make_unique<DIContainer>() } {}
 
 public:
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_singleton() &&
+    auto&& register_singleton_params_deduced() &&
     {
-        return register_singleton_impl<Dependency, Interface>(std::move(*this));
+        return register_singleton_with_auto_creator<Dependency, Interface>(std::move(*this));
     }
 
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_singleton() &
+    auto&& register_singleton_params_deduced() &
     {
-        return register_singleton_impl<Dependency, Interface>(*this);
+        return register_singleton_with_auto_creator<Dependency, Interface>(*this);
     }
 
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_transient() &
+    auto&& register_transient_params_deduced() &
     {
-        return register_transient_impl<Dependency, Interface>(*this);
+        return register_transient_with_auto_creator<Dependency, Interface>(*this);
     }
 
     template<typename Dependency, typename Interface = Dependency>
-    auto&& register_transient() &&
+    auto&& register_transient_params_deduced() &&
     {
-        return register_transient_impl<Dependency, Interface>(std::move(*this));
+        return register_transient_with_auto_creator<Dependency, Interface>(std::move(*this));
     }
 
     std::unique_ptr<DIContainer> build() &&
@@ -45,23 +49,44 @@ public:
         return built_container;
     }
 
-    std::unique_ptr<DIContainer>  build() &
+    std::unique_ptr<DIContainer> build() &
     {
         return std::make_unique<DIContainer>(*container_);
     }
 
 private:
     template<typename Dependency, typename Interface, typename Self>
-    Self&& register_singleton_impl(Self&& self)
+    static Self&& register_singleton_with_auto_creator(Self&& self)
     {
-        self.container_->add_singleton_dependency(typeid(Interface), container_->produce_singleton_creator<Dependency>());
-        return std::forward<Self>(self);
+        return register_singleton_with_creator<Interface>
+        (
+            std::forward<Self>(self),
+            self.container_->template produce_singleton_auto_creator<Dependency>()
+        );
     }
 
     template<typename Dependency, typename Interface, typename Self>
-    Self&& register_transient_impl(Self&& self)
+    static Self&& register_transient_with_auto_creator(Self&& self)
     {
-        self.container_->add_transient_dependency(typeid(Interface), container_->produce_transient_creator<Dependency>());
+        return register_transient_with_creator<Interface>
+        (
+            std::forward<Self>(self),
+            self.container_->template produce_transient_auto_creator<Dependency>()
+        );
+    }
+
+private:
+    template<typename Interface, typename Self>
+    static Self&& register_singleton_with_creator(Self&& self, SingletonCreator&& creator)
+    {
+        self.container_->add_singleton_dependency(typeid(Interface), std::move(creator));
+        return std::forward<Self>(self);
+    }
+
+    template<typename Interface, typename Self>
+    static Self&& register_transient_with_creator(Self&& self, TransientCreator&& creator)
+    {
+        self.container_->add_transient_dependency(typeid(Interface), std::move(creator));
         return std::forward<Self>(self);
     }
 

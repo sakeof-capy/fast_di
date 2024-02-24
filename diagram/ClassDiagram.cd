@@ -65,6 +65,16 @@
   </Class>
   <Class Name="DIContainer">
     <Position X="19.5" Y="0.5" Width="3" />
+    <Members>
+      <Method Name="add_singleton_dependency" Hidden="true" />
+      <Method Name="add_transient_dependency" Hidden="true" />
+      <Method Name="produce_singleton_creator" Hidden="true" />
+      <Method Name="produce_transient_creator" Hidden="true" />
+      <Method Name="resolve_impl" Hidden="true" />
+      <Method Name="resolve_singleton" Hidden="true" />
+      <Method Name="resolve_transient" Hidden="true" />
+      <Method Name="ResolveCreatorArgs" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>CAABAAAAAAAAAAAIgAAAgIDQAAAAEAAAAAAAABCAAAE=</HashCode>
       <FileName>DIContainer.hpp</FileName>
@@ -72,6 +82,10 @@
   </Class>
   <Class Name="DIContainerBuilder">
     <Position X="22.75" Y="0.5" Width="3.75" />
+    <Members>
+      <Method Name="register_singleton_impl" Hidden="true" />
+      <Method Name="register_transient_impl" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAAAQAAAAAAAAAAAAAAAAAAABAAABAAAAICAAEAAABA=</HashCode>
       <FileName>DIContainerBuilder.hpp</FileName>
