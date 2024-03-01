@@ -3,7 +3,9 @@
 
 #include <string>
 
-class UserModel
+#include "classic_di/DISubscribe.hpp"
+
+class UserModel : private DISubscribe<SubscribeType::Transient, UserModel, UserModel>
 {
 public:
     void set_name(const std::string& name)
@@ -24,12 +26,6 @@ public:
     const std::string& get_password() const noexcept
     {
         return password_;
-    }
-
-public:
-    static UserModel create()
-    {
-        return {};
     }
 
 private:

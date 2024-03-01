@@ -5,7 +5,10 @@
 #include "../Database/IDatabase.hpp"
 #include "../Logger/ILogger.hpp"
 
-class TaskController
+#include "classic_di/DISubscribe.hpp"
+
+class TaskController : private DISubscribe<SubscribeType::Singleton, TaskController, TaskController,
+        TaskModel&, IDatabase&, ILogger&>
 {
 public:
     TaskController(TaskModel& model, IDatabase& database, ILogger& logger)
@@ -30,12 +33,6 @@ public:
     void handle_submit()
     {
         database_.save_task(model_);
-    }
-
-public:
-    static TaskController create(TaskModel& model, IDatabase& database, ILogger& logger)
-    {
-        return { model, database, logger };
     }
 
 private:

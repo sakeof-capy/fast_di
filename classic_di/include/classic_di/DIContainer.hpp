@@ -60,7 +60,7 @@ private:
             return resolve_transient<Dependency>(transient_found->second);
         }
 
-        throw std::runtime_error("Non-registered dependency.");
+        throw std::runtime_error("Non-registered dependency: " + std::string(typeid(Dependency).name()));
     }
 
 private: // Producers for builder

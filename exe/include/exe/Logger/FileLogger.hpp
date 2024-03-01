@@ -4,7 +4,10 @@
 #include "ILogger.hpp"
 #include <iostream>
 
-class FileLogger : public ILogger
+#include "classic_di/DISubscribe.hpp"
+
+class FileLogger : public ILogger,
+                   private DISubscribe<SubscribeType::Singleton, FileLogger, ILogger>
 {
 public:
     ~FileLogger() override = default;
@@ -21,5 +24,7 @@ public:
         return {};
     }
 };
+
+template class DISubscribe<SubscribeType::Singleton, FileLogger, ILogger>;
 
 #endif //DI_CONTAINERS_FILELOGGER_HPP

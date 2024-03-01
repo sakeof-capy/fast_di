@@ -7,7 +7,10 @@
 #include "../Models/UserModel.hpp"
 #include <iostream>
 
-class PostgreSQLDatabase : public IDatabase
+#include "classic_di/DISubscribe.hpp"
+
+class PostgreSQLDatabase : public IDatabase,
+        private DISubscribe<SubscribeType::Singleton, PostgreSQLDatabase, IDatabase, ILogger&>
 {
 public:
     explicit PostgreSQLDatabase(ILogger& logger)
@@ -28,10 +31,10 @@ public:
     }
 
 public:
-    static PostgreSQLDatabase create(ILogger& logger)
-    {
-        return PostgreSQLDatabase { logger };
-    }
+//    static PostgreSQLDatabase create(ILogger& logger)
+//    {
+//        return PostgreSQLDatabase { logger };
+//    }
 
 private:
     ILogger& logger_;

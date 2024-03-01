@@ -5,7 +5,10 @@
 #include "../Database/IDatabase.hpp"
 #include "../Logger/ILogger.hpp"
 
-class UserController
+#include "classic_di/DISubscribe.hpp"
+
+class UserController : private DISubscribe<SubscribeType::Singleton, UserController, UserController,
+        UserModel&, IDatabase&, ILogger&>
 {
 public:
     UserController(UserModel& model, IDatabase& database, ILogger& logger)
@@ -30,12 +33,6 @@ public:
     void handle_submit()
     {
         database_.save_user(model_);
-    }
-
-public:
-    static UserController create(UserModel& model, IDatabase& database, ILogger& logger)
-    {
-        return UserController { model, database, logger };
     }
 
 private:

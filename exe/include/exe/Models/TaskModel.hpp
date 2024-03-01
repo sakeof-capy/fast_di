@@ -3,7 +3,9 @@
 
 #include <string>
 
-class TaskModel
+#include "classic_di/DISubscribe.hpp"
+
+class TaskModel : private DISubscribe<SubscribeType::Transient, TaskModel, TaskModel>
 {
 public:
     void set_name(const std::string& name)

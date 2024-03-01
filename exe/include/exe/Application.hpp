@@ -5,9 +5,13 @@
 #include "Controllers/UserController.hpp"
 #include "Logger/ILogger.hpp"
 
+#include "classic_di/DISubscribe.hpp"
+
 #include <iostream>
 
 class Application
+        : private DISubscribe<SubscribeType::Singleton, Application, Application,
+        TaskController&, UserController&, ILogger&>
 {
 public:
     Application(TaskController& task_controller, UserController& user_controller, ILogger& logger)
