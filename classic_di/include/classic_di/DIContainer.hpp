@@ -65,7 +65,7 @@ private:
 
 private: // Producers for builder
     template<typename Dependency>
-    SingletonCreator produce_singleton_auto_creator() const
+    SingletonCreator produce_singleton_creator() const
     {
         return [this]() {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
@@ -76,7 +76,7 @@ private: // Producers for builder
     }
 
     template<typename Dependency>
-    TransientCreator produce_transient_auto_creator() const
+    TransientCreator produce_transient_creator() const
     {
         return [this]() {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
