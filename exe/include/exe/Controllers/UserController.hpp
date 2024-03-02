@@ -7,11 +7,10 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class UserController : private DISubscribe<SubscribeType::Singleton, UserController, UserController,
-        UserModel&, IDatabase&, ILogger&>
+class UserController_
 {
 public:
-    UserController(UserModel& model, IDatabase& database, ILogger& logger)
+    UserController_(UserModel& model, IDatabase& database, ILogger& logger)
             : model_ { model }
             , database_ { database }
             , logger_ { logger }
@@ -40,5 +39,10 @@ private:
     IDatabase& database_;
     ILogger& logger_;
 };
+
+MakeInjectableAs(UserController) Entity(UserController_)
+With <
+        Singleton(UserController) ConstructedWith <UserModel&, IDatabase&, ILogger&> Injected
+     > AsInjectionRulesFor(UserController)
 
 #endif //DI_CONTAINERS_USERCONTROLLER_HPP

@@ -5,7 +5,7 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class UserModel : private DISubscribe<SubscribeType::Transient, UserModel, UserModel>
+class UserModel_
 {
 public:
     void set_name(const std::string& name)
@@ -32,5 +32,10 @@ private:
     std::string name_;
     std::string password_;
 };
+
+MakeInjectableAs(UserModel) Entity(UserModel_)
+With <
+        Transient(UserModel) ConstructedWith <> Injected
+     > AsInjectionRulesFor(UserModel)
 
 #endif //DI_CONTAINERS_USERMODEL_HPP

@@ -54,7 +54,6 @@ class DISubscribe
 public:
     DISubscribe()
     {
-//        std::cout << s_IS_SUBSCRIBED << std::endl;
         verify_subscribed();
     }
 
@@ -77,11 +76,15 @@ private:
         switch (SUBSCRIBE_TYPE)
         {
             case SubscribeType::Singleton:
+#ifndef NDEBUG
                 std::cout << "Subscribed to singleton as " << typeid(ToInsertType).name() << " to interface " << typeid(Interface).name() << std::endl;
+#endif
                 builder.register_singleton<ToInsertType, Interface>();
                 return true;
             case SubscribeType::Transient:
+#ifndef NDEBUG
                 std::cout << "Subscribed to transient as " << typeid(ToInsertType).name() << " to interface " << typeid(Interface).name() << std::endl;
+#endif
                 builder.register_transient<ToInsertType, Interface>();
                 return true;
             default:
@@ -122,24 +125,31 @@ struct DISubscribe_Utility_
     };
 };
 
-#define ToHiddenName(name) name##__INJECTED
-#define MakeInjectable(name) \
-class name : public InjectionConfiguration<ToHiddenName(name)>::template Inner
+#define MakeInjectableAs(injectable_name) \
+class injectable_name : public
+
+#define Entity(original_name) InjectionConfiguration<original_name>::template Inner
 
 #define With
-#define AsInjectionRules(name) ::UsableClass                                    \
-{                                                                               \
-public:                                                                         \
-    template<typename... Args>                                                  \
-    explicit name(Args&&... args) : BaseType(std::forward<Args>(args)...) {}    \
-    using SubscribersTuple = typename BaseType::SubscribersTuple;               \
-};                                                                              \
-inline void to_instantiate() { static_cast<void>(name::SubscribersTuple {});    \
-}
+#define AsInjectionRulesFor(name) ::UsableClass                                         \
+{                                                                                       \
+public:                                                                                 \
+    template<typename... Args>                                                          \
+    explicit name(Args&&... args) : BaseType(std::forward<Args>(args)...) {}            \
+    using SubscribersTuple = typename BaseType::SubscribersTuple;                       \
+};                                                                                      \
+inline void to_instantiate_##name() { static_cast<void>(name::SubscribersTuple {}); }
+
 #define SingletonAsInterface(Dependency, Interface) \
 typename DISubscribe_Utility_<SubscribeType::Singleton, Dependency, Interface>::template Inner
 
 #define Singleton(Dependency) SingletonAsInterface(Dependency, Dependency)
+
+#define TransientAsInterface(Dependency, Interface) \
+typename DISubscribe_Utility_<SubscribeType::Transient, Dependency, Interface>::template Inner
+
+#define Transient(Dependency) TransientAsInterface(Dependency, Dependency)
+
 #define ConstructedWith
 #define Injected ::Type
 

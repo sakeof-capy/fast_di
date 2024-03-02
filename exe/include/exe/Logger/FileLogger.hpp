@@ -6,11 +6,10 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class FileLogger : public ILogger,
-                   private DISubscribe<SubscribeType::Singleton, FileLogger, ILogger>
+class FileLogger_ : public ILogger
 {
 public:
-    ~FileLogger() override = default;
+    ~FileLogger_() override = default;
 
 public:
     void log(const std::string& message) override
@@ -19,12 +18,15 @@ public:
     }
 
 public:
-    static FileLogger create()
+    static FileLogger_ create()
     {
         return {};
     }
 };
 
-template class DISubscribe<SubscribeType::Singleton, FileLogger, ILogger>;
+MakeInjectableAs(FileLogger) Entity(FileLogger_)
+With <
+        SingletonAsInterface(FileLogger, ILogger) ConstructedWith <> Injected
+     > AsInjectionRulesFor(FileLogger)
 
 #endif //DI_CONTAINERS_FILELOGGER_HPP

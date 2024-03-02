@@ -7,11 +7,10 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class TaskController : private DISubscribe<SubscribeType::Singleton, TaskController, TaskController,
-        TaskModel&, IDatabase&, ILogger&>
+class TaskController_
 {
 public:
-    TaskController(TaskModel& model, IDatabase& database, ILogger& logger)
+    TaskController_(TaskModel& model, IDatabase& database, ILogger& logger)
         : model_ { model }
         , database_ { database }
         , logger_ { logger }
@@ -39,6 +38,11 @@ private:
     TaskModel& model_;
     IDatabase& database_;
     ILogger& logger_;
-}; // TaskController
+};
+
+MakeInjectableAs(TaskController) Entity(TaskController_)
+With <
+        Singleton(TaskController) ConstructedWith <TaskModel&, IDatabase&, ILogger&> Injected
+     > AsInjectionRulesFor(TaskController)
 
 #endif //DI_CONTAINERS_TASKCONTROLLER_HPP

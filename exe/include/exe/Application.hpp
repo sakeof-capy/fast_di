@@ -9,10 +9,10 @@
 
 #include <iostream>
 
-class ToHiddenName(Application)
+class Application_
 {
 public:
-    ToHiddenName(Application)(TaskController& task_controller, UserController& user_controller, ILogger& logger)
+    Application_(TaskController& task_controller, UserController& user_controller, ILogger& logger)
         : task_controller_ { task_controller }
         , user_controller_ { user_controller }
         , logger_ { logger }
@@ -65,7 +65,7 @@ private:
     }
 
 public:
-    static ToHiddenName(Application) create(TaskController& task_controller, UserController& user_controller, ILogger& logger)
+    static Application_ create(TaskController& task_controller, UserController& user_controller, ILogger& logger)
     {
         return { task_controller, user_controller, logger };
     }
@@ -76,9 +76,9 @@ private:
     ILogger& logger_;
 };
 
-MakeInjectable(Application)
+MakeInjectableAs(Application) Entity(Application_)
 With <
         Singleton(Application) ConstructedWith <TaskController&, UserController&, ILogger&> Injected
-     > AsInjectionRules(Application)
+     > AsInjectionRulesFor(Application)
 
 #endif //DI_CONTAINERS_APPLICATION_HPP

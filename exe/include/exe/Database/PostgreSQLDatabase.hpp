@@ -9,11 +9,10 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class PostgreSQLDatabase : public IDatabase,
-        private DISubscribe<SubscribeType::Singleton, PostgreSQLDatabase, IDatabase, ILogger&>
+class PostgreSQLDatabase_ : public IDatabase
 {
 public:
-    explicit PostgreSQLDatabase(ILogger& logger)
+    explicit PostgreSQLDatabase_(ILogger& logger)
         : logger_ { logger }
     {
         logger_.log("Connected to PostgreSQL database.");
@@ -30,14 +29,13 @@ public:
         std::cout << "Saved User to PostgreSQL DB: name=" << user.get_name() << ", password=" << user.get_password() << '\n';
     }
 
-public:
-//    static PostgreSQLDatabase create(ILogger& logger)
-//    {
-//        return PostgreSQLDatabase { logger };
-//    }
-
 private:
     ILogger& logger_;
 };
+
+MakeInjectableAs(PostgreSQLDatabase) Entity(PostgreSQLDatabase_)
+With <
+        SingletonAsInterface(PostgreSQLDatabase, IDatabase) ConstructedWith <ILogger&> Injected
+     > AsInjectionRulesFor(PostgreSQLDatabase)
 
 #endif //DI_CONTAINERS_POSTGRESQLDATABASE_HPP

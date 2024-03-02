@@ -8,7 +8,6 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-#include <iostream>
 
 int main()
 {
