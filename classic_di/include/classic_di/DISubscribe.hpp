@@ -13,7 +13,7 @@ enum class SubscribeType
 template<typename Entity, typename... Args>
 concept CreatableWith = requires(Args... args)
 {
-    { Entity::create(args...) } -> std::same_as<Entity>;
+    { Entity::create(args...) } -> std::convertible_to<Entity>;
 };
 
 template<typename Entity, typename... Args>
@@ -92,5 +92,55 @@ private:
 private:
     static inline bool s_IS_SUBSCRIBED = subscribe_to_global_di();
 };
+
+template<typename HiddenNameOfInjectable>
+struct InjectionConfiguration
+{
+    template<typename... HowToInject>
+    struct Inner
+    {
+        struct UsableClass : public HiddenNameOfInjectable, public HowToInject... {
+            template<typename... Args>
+            explicit UsableClass(Args&&... args) : HiddenNameOfInjectable(std::forward<Args>(args)...)
+            {}
+
+            using BaseType = UsableClass;
+            using SubscribersTuple = std::tuple<HowToInject...>;
+        };
+    };
+
+
+};
+
+template<SubscribeType SUBSCRIBE_TYPE, typename Dependency, typename Interface>
+struct DISubscribe_Utility_
+{
+    template<typename... CreatorArgs>
+    struct Inner
+    {
+        using Type = DISubscribe<SUBSCRIBE_TYPE, Dependency, Interface, CreatorArgs...>;
+    };
+};
+
+#define ToHiddenName(name) name##__INJECTED
+#define MakeInjectable(name) \
+class name : public InjectionConfiguration<ToHiddenName(name)>::template Inner
+
+#define With
+#define AsInjectionRules(name) ::UsableClass                                    \
+{                                                                               \
+public:                                                                         \
+    template<typename... Args>                                                  \
+    explicit name(Args&&... args) : BaseType(std::forward<Args>(args)...) {}    \
+    using SubscribersTuple = typename BaseType::SubscribersTuple;               \
+};                                                                              \
+inline void to_instantiate() { static_cast<void>(name::SubscribersTuple {});    \
+}
+#define SingletonAsInterface(Dependency, Interface) \
+typename DISubscribe_Utility_<SubscribeType::Singleton, Dependency, Interface>::template Inner
+
+#define Singleton(Dependency) SingletonAsInterface(Dependency, Dependency)
+#define ConstructedWith
+#define Injected ::Type
 
 #endif //DISUBSCRIBE_HPP_

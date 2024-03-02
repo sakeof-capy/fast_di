@@ -9,12 +9,10 @@
 
 #include <iostream>
 
-class Application
-        : private DISubscribe<SubscribeType::Singleton, Application, Application,
-        TaskController&, UserController&, ILogger&>
+class ToHiddenName(Application)
 {
 public:
-    Application(TaskController& task_controller, UserController& user_controller, ILogger& logger)
+    ToHiddenName(Application)(TaskController& task_controller, UserController& user_controller, ILogger& logger)
         : task_controller_ { task_controller }
         , user_controller_ { user_controller }
         , logger_ { logger }
@@ -29,7 +27,6 @@ public:
         const std::string user_password_message = "user_password=";
         std::string input{};
 
-//        std::cout << &logger_ << std::endl;
         logger_.log("App started.");
 
         do {
@@ -68,7 +65,7 @@ private:
     }
 
 public:
-    static Application create(TaskController& task_controller, UserController& user_controller, ILogger& logger)
+    static ToHiddenName(Application) create(TaskController& task_controller, UserController& user_controller, ILogger& logger)
     {
         return { task_controller, user_controller, logger };
     }
@@ -78,5 +75,10 @@ private:
     UserController& user_controller_;
     ILogger& logger_;
 };
+
+MakeInjectable(Application)
+With <
+        Singleton(Application) ConstructedWith <TaskController&, UserController&, ILogger&> Injected
+     > AsInjectionRules(Application)
 
 #endif //DI_CONTAINERS_APPLICATION_HPP
