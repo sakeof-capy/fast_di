@@ -6,6 +6,8 @@
 #include <vector>
 #include <typeindex>
 #include <memory>
+#include <string>
+#include <stdexcept>
 #include <tuple>
 
 #include "type_traits/FunctionTypeTraits.hpp"
