@@ -76,9 +76,68 @@ private:
     ILogger& logger_;
 };
 
-MakeInjectableAs(Application) Entity(Application_)
-With <
-        Singleton(Application) ConstructedWith <TaskController&, UserController&, ILogger&> Injected
-     > AsInjectionRulesFor(Application)
+//#define MakeInjectableAs(injectable_name) \
+//class injectable_name : public
+//
+//#define Entity(original_name) InjectionConfiguration<original_name>::template Inner
+//
+//#define With
+//#define AsInjectionRulesFor(name) ::UsableClass                                         \
+//{                                                                                       \
+//public:                                                                                 \
+//    template<typename... Args>                                                          \
+//    explicit name(Args&&... args) : BaseType(std::forward<Args>(args)...) {}            \
+//    using SubscribersTuple = typename BaseType::SubscribersTuple;                       \
+//};                                                                                      \
+//inline void to_instantiate_##name() { static_cast<void>(name::SubscribersTuple {}); }
+//
+//#define SingletonAsInterface(Dependency, Interface) \
+//typename DISubscribe_Utility_<SubscribeType::Singleton, Dependency, Interface>::template Inner
+//
+//#define Singleton(Dependency) SingletonAsInterface(Dependency, Dependency)
+//
+//#define TransientAsInterface(Dependency, Interface) \
+//typename DISubscribe_Utility_<SubscribeType::Transient, Dependency, Interface>::template Inner
+//
+//#define Transient(Dependency) TransientAsInterface(Dependency, Dependency)
+//
+//#define ConstructedWith
+//#define Injected ::Type
+
+//class Application : public InjectionConfiguration<Application_>::template Inner
+//        <typename DISubscribe_Utility_<SubscribeType::Singleton, Application, Application>::template Inner<TaskController&, UserController&, ILogger&>::Type
+//        > ::UsableClass
+//{
+//public:
+//    template<typename... Args>
+//    explicit Application(Args&&... args) : BaseType(std::forward<Args>(args)...) {}
+//    using SubscribersTuple = typename BaseType::SubscribersTuple;
+//};
+//inline void to_instantiate_Application() { static_cast<void>(Application::SubscribersTuple {}); }
+
+
+
+#define MakeInjectable(NewName) \
+class Stuff__;                  \
+using NewName = Stuff__;        \
+class Stuff__ : public
+
+#define AsInjectionRules \
+{                        \
+    using BaseType::BaseType; \
+    static void expl_instantiate() { static_cast<void>(ConfigsTuple {});}\
+}
+
+
+MakeInjectable(Application) Entity<Application_>::template
+With
+<
+    DISubscribe<SubscribeType::Singleton, Application, Application, TaskController&, UserController&, ILogger&>
+> AsInjectionRules;
+
+//MakeInjectableAs(Application) Entity(Application_)
+//With <
+//        Singleton(Application) ConstructedWith <TaskController&, UserController&, ILogger&> Injected
+//     > AsInjectionRulesFor(Application)
 
 #endif //DI_CONTAINERS_APPLICATION_HPP

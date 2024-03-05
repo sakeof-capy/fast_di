@@ -9,13 +9,18 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class PostgreSQLDatabase_ : public IDatabase
+class PostgreSQLDatabase : public IDatabase
 {
 public:
-    explicit PostgreSQLDatabase_(ILogger& logger)
+    explicit PostgreSQLDatabase(ILogger& logger)
         : logger_ { logger }
     {
         logger_.log("Connected to PostgreSQL database.");
+    }
+
+    static PostgreSQLDatabase create(ILogger& logger)
+    {
+        return PostgreSQLDatabase(logger);
     }
 
 public:
@@ -33,9 +38,9 @@ private:
     ILogger& logger_;
 };
 
-MakeInjectableAs(PostgreSQLDatabase) Entity(PostgreSQLDatabase_)
-With <
-        SingletonAsInterface(PostgreSQLDatabase, IDatabase) ConstructedWith <ILogger&> Injected
-     > AsInjectionRulesFor(PostgreSQLDatabase)
+//MakeInjectableAs(PostgreSQLDatabase) Entity(PostgreSQLDatabase_)
+//With <
+//        SingletonAsInterface(PostgreSQLDatabase, IDatabase) ConstructedWith <ILogger&> Injected
+//     > AsInjectionRulesFor(PostgreSQLDatabase)
 
 #endif //DI_CONTAINERS_POSTGRESQLDATABASE_HPP

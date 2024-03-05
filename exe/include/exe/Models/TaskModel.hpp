@@ -5,7 +5,7 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class TaskModel_
+class TaskModel
 {
 public:
     void set_name(const std::string& name)
@@ -29,7 +29,7 @@ public:
     }
 
 public:
-    static TaskModel_ create()
+    static TaskModel create()
     {
         return {};
     }
@@ -39,9 +39,9 @@ private:
     std::string executant_;
 };
 
-MakeInjectableAs(TaskModel) Entity(TaskModel_)
-With <
-        Transient(TaskModel) ConstructedWith <> Injected
-     > AsInjectionRulesFor(TaskModel)
+//MakeInjectableAs(TaskModel) Entity(TaskModel_)
+//With <
+//        Transient(TaskModel) ConstructedWith <> Injected
+//     > AsInjectionRulesFor(TaskModel)
 
 #endif //DI_CONTAINERS_TASKMODEL_HPP

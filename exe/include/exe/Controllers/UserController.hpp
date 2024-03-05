@@ -7,14 +7,19 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class UserController_
+class UserController
 {
 public:
-    UserController_(UserModel& model, IDatabase& database, ILogger& logger)
+    UserController(UserModel& model, IDatabase& database, ILogger& logger)
             : model_ { model }
             , database_ { database }
             , logger_ { logger }
     {}
+
+    static UserController create(UserModel& model, IDatabase& database, ILogger& logger)
+    {
+        return UserController(model, database, logger);
+    }
 
 public:
     void handle_name_modified(const std::string& new_name)
@@ -40,9 +45,9 @@ private:
     ILogger& logger_;
 };
 
-MakeInjectableAs(UserController) Entity(UserController_)
-With <
-        Singleton(UserController) ConstructedWith <UserModel&, IDatabase&, ILogger&> Injected
-     > AsInjectionRulesFor(UserController)
+//MakeInjectableAs(UserController) Entity(UserController_)
+//With <
+//        Singleton(UserController) ConstructedWith <UserModel&, IDatabase&, ILogger&> Injected
+//     > AsInjectionRulesFor(UserController)
 
 #endif //DI_CONTAINERS_USERCONTROLLER_HPP

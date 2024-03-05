@@ -7,14 +7,19 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class TaskController_
+class TaskController
 {
 public:
-    TaskController_(TaskModel& model, IDatabase& database, ILogger& logger)
+    TaskController(TaskModel& model, IDatabase& database, ILogger& logger)
         : model_ { model }
         , database_ { database }
         , logger_ { logger }
     {}
+
+    static TaskController create(TaskModel& model, IDatabase& database, ILogger& logger)
+    {
+        return {model, database, logger};
+    }
 
 public:
     void handle_name_modified(const std::string& new_name)
@@ -40,9 +45,9 @@ private:
     ILogger& logger_;
 };
 
-MakeInjectableAs(TaskController) Entity(TaskController_)
-With <
-        Singleton(TaskController) ConstructedWith <TaskModel&, IDatabase&, ILogger&> Injected
-     > AsInjectionRulesFor(TaskController)
+//MakeInjectableAs(TaskController) Entity(TaskController_)
+//With <
+//        Singleton(TaskController) ConstructedWith <TaskModel&, IDatabase&, ILogger&> Injected
+//     > AsInjectionRulesFor(TaskController)
 
 #endif //DI_CONTAINERS_TASKCONTROLLER_HPP
