@@ -7,16 +7,16 @@
 
 #include "classic_di/DISubscribe.hpp"
 
-class TaskController
+class TaskController_
 {
 public:
-    TaskController(TaskModel& model, IDatabase& database, ILogger& logger)
+    TaskController_(TaskModel_& model, IDatabase& database, ILogger& logger)
         : model_ { model }
         , database_ { database }
         , logger_ { logger }
     {}
 
-    static TaskController create(TaskModel& model, IDatabase& database, ILogger& logger)
+    static TaskController_ create(TaskModel& model, IDatabase& database, ILogger& logger)
     {
         return {model, database, logger};
     }
@@ -40,14 +40,14 @@ public:
     }
 
 private:
-    TaskModel& model_;
+    TaskModel_& model_;
     IDatabase& database_;
     ILogger& logger_;
 };
 
-//MakeInjectableAs(TaskController) Entity(TaskController_)
-//With <
-//        Singleton(TaskController) ConstructedWith <TaskModel&, IDatabase&, ILogger&> Injected
-//     > AsInjectionRulesFor(TaskController)
+MakeInjectableAs(TaskController) Entity(TaskController_)
+With <
+        SingletonAsInterface(TaskController, TaskController_) ConstructedWith <TaskModel_&, IDatabase&, ILogger&> Injected
+     > AsInjectionRulesFor(TaskController)
 
 #endif //DI_CONTAINERS_TASKCONTROLLER_HPP

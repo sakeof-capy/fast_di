@@ -125,20 +125,20 @@ struct DISubscribe_Utility_
     };
 };
 
-//#define MakeInjectableAs(injectable_name) \
-//class injectable_name : public
-//
-//#define Entity(original_name) InjectionConfiguration<original_name>::template Inner
-//
-//#define With
-//#define AsInjectionRulesFor(name) ::UsableClass                                         \
-//{                                                                                       \
-//public:                                                                                 \
-//    template<typename... Args>                                                          \
-//    explicit name(Args&&... args) : BaseType(std::forward<Args>(args)...) {}            \
-//    using SubscribersTuple = typename BaseType::SubscribersTuple;                       \
-//};                                                                                      \
-//inline void to_instantiate_##name() { static_cast<void>(name::SubscribersTuple {}); }
+#define MakeInjectableAs(injectable_name) \
+class injectable_name : public
+
+#define Entity(original_name) InjectionConfiguration<original_name>::template Inner
+
+#define With
+#define AsInjectionRulesFor(name) ::UsableClass                                         \
+{                                                                                       \
+public:                                                                                 \
+    template<typename... Args>                                                          \
+    explicit name(Args&&... args) : BaseType(std::forward<Args>(args)...) {}            \
+    using SubscribersTuple = typename BaseType::SubscribersTuple;                       \
+};                                                                                      \
+inline void to_instantiate_##name() { static_cast<void>(name::SubscribersTuple {}); }
 
 #define SingletonAsInterface(Dependency, Interface) \
 typename DISubscribe_Utility_<SubscribeType::Singleton, Dependency, Interface>::template Inner
@@ -157,12 +157,23 @@ template<typename EntityType>
 struct Entity
 {
     template<typename... Configs>
-    struct With : EntityType, Configs ...
+    struct Withh : EntityType, Configs ...
     {
         using ConfigsTuple = std::tuple<Configs...>;
-        using BaseType = With<Configs...>;
+        using BaseType = Withh<Configs...>;
         using EntityType::EntityType;
     };
 };
+
+#define MakeInjectable(NewName) \
+class Stuff__;                  \
+using NewName = Stuff__;        \
+class Stuff__ : public
+
+#define AsInjectionRules \
+{                        \
+    using BaseType::BaseType; \
+    static void expl_instantiate() { static_cast<void>(ConfigsTuple {});}\
+}
 
 #endif //DISUBSCRIBE_HPP_

@@ -12,7 +12,7 @@
 class Application_
 {
 public:
-    Application_(TaskController& task_controller, UserController& user_controller, ILogger& logger)
+    Application_(TaskController_& task_controller, UserController_& user_controller, ILogger& logger)
         : task_controller_ { task_controller }
         , user_controller_ { user_controller }
         , logger_ { logger }
@@ -64,17 +64,23 @@ private:
         return input.substr(prefix.size());
     }
 
-public:
-    static Application_ create(TaskController& task_controller, UserController& user_controller, ILogger& logger)
-    {
-        return { task_controller, user_controller, logger };
-    }
-
 private:
-    TaskController& task_controller_;
-    UserController& user_controller_;
+    TaskController_& task_controller_;
+    UserController_& user_controller_;
     ILogger& logger_;
 };
+
+
+
+
+
+
+
+MakeInjectable(Application) Entity<Application_>::template
+Withh
+<
+    DISubscribe<SubscribeType::Singleton, Application, Application, TaskController_&, UserController_&, ILogger&>
+> AsInjectionRules;
 
 //#define MakeInjectableAs(injectable_name) \
 //class injectable_name : public
@@ -114,26 +120,6 @@ private:
 //    using SubscribersTuple = typename BaseType::SubscribersTuple;
 //};
 //inline void to_instantiate_Application() { static_cast<void>(Application::SubscribersTuple {}); }
-
-
-
-#define MakeInjectable(NewName) \
-class Stuff__;                  \
-using NewName = Stuff__;        \
-class Stuff__ : public
-
-#define AsInjectionRules \
-{                        \
-    using BaseType::BaseType; \
-    static void expl_instantiate() { static_cast<void>(ConfigsTuple {});}\
-}
-
-
-MakeInjectable(Application) Entity<Application_>::template
-With
-<
-    DISubscribe<SubscribeType::Singleton, Application, Application, TaskController&, UserController&, ILogger&>
-> AsInjectionRules;
 
 //MakeInjectableAs(Application) Entity(Application_)
 //With <

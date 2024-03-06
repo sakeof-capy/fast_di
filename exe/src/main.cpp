@@ -11,15 +11,15 @@
 
 int main()
 {
-    std::unique_ptr<DIContainer> container = GlobalDI::builder()
-            .register_singleton<PostgreSQLDatabase, IDatabase>()
-            .register_singleton<FileLogger, ILogger>()
-            .register_singleton<UserController>()
-            .register_singleton<TaskController>()
-            .register_transient<UserModel>()
-            .register_transient<TaskModel>()
-            .build();
-//    std::unique_ptr<DIContainer> container = GlobalDI::builder().build();
+//    std::unique_ptr<DIContainer> container = GlobalDI::builder()
+//            .register_singleton<PostgreSQLDatabase, IDatabase>()
+//            .register_singleton<FileLogger, ILogger>()
+//            .register_singleton<UserController>()
+//            .register_singleton<TaskController>()
+//            .register_transient<UserModel>()
+//            .register_transient<TaskModel>()
+//            .build();
+    std::unique_ptr<DIContainer> container = GlobalDI::builder().build();
     Application& app = container->resolve<Application>();
     app.run();
 
