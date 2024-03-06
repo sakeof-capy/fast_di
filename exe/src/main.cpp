@@ -20,6 +20,7 @@ int main()
 //            .register_transient<TaskModel>()
 //            .build();
     std::unique_ptr<DIContainer> container = GlobalDI::builder().build();
+    std::cout << "HERE" << std::endl;
     Application& app = container->resolve<Application>();
     app.run();
 
