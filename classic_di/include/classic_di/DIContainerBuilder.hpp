@@ -48,7 +48,7 @@ public:
         return built_container;
     }
 
-    std::unique_ptr<DIContainer>  build() &
+    std::unique_ptr<DIContainer> build() &
     {
         return std::make_unique<DIContainer>(*container_);
     }
@@ -74,6 +74,7 @@ private:
             container_->produce_transient_creator<Dependency>(),
             tag
         );
+
         return std::forward<Self>(self);
     }
 

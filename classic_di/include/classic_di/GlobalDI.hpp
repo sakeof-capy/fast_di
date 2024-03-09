@@ -9,6 +9,8 @@ class GlobalDI final
 {
 private:
     GlobalDI() = default;
+
+public:
     GlobalDI(const GlobalDI&) = delete;
     GlobalDI(GlobalDI&&) = delete;
     GlobalDI& operator=(const GlobalDI&) = delete;
