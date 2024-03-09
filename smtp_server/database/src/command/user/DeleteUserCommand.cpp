@@ -1,17 +1,14 @@
-#include "../../../include/command/user/DeleteUserCommand.hpp"
+#include "../../../include/database/command/user/DeleteUserCommand.hpp"
 #include <iostream>
 
 namespace Database::Command::User
 {
 
-using ResultType = IDBCommand::ResultType;
-using ParamsType = IDBCommand::ParamsType;
-
-std::optional<ResultType> DeleteUserCommand::execute(const ParamsType& params)
+auto DeleteUserCommand::execute(const ParamsType& params) -> std::optional<ResultType>
 {
     try
     {
-        KeyParamType name = params.at("name");
+        KeyArgType name = params.at("name");
         std::cout << "User deleted WITH name = " << name << '\n';
     }
     catch(...)

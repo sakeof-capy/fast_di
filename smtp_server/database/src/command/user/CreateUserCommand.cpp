@@ -1,17 +1,15 @@
-#include "../../../include/command/user/CreateUserCommand.hpp"
+#include "../../../include/database/command/user/CreateUserCommand.hpp"
 #include <iostream>
 
 namespace Database::Command::User
 {
 
-using ResultType = IDBCommand::ResultType;
-
-std::optional<ResultType> CreateUserCommand::execute(const ParamsType& params)
+auto CreateUserCommand::execute(const ParamsType& params) -> std::optional<ResultType>
 {
     try
     {
-        KeyParamType name = params.at("name");
-        KeyParamType password = params.at("password");
+        KeyArgType name = params.at("name");
+        KeyArgType password = params.at("password");
         std::cout << "User created WITH name = " << name << ", password = " << password << '\n';
     }
     catch(...)

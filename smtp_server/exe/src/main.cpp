@@ -1,8 +1,8 @@
 #include "classic_di/DIContainerBuilder.hpp"
 #include "classic_di/DIContainer.hpp"
-#include "../../database/include/command/IDBCommand.hpp"
-#include "../../database/include/command/user/CreateUserCommand.hpp"
-#include "../../database/include/command/user/DeleteUserCommand.hpp"
+#include "../../database/include/database/command/IDBCommand.hpp"
+#include "../../database/include/database/command/user/CreateUserCommand.hpp"
+#include "../../database/include/database/command/user/DeleteUserCommand.hpp"
 
 using namespace Database::Command;
 
@@ -15,13 +15,13 @@ int main()
 
     {
         IDBCommand& create_user_command = container->resolve<IDBCommand>("create-user");
-        IDBCommand::ParamsType create_params = { { "name", "Ruslan"}, {"password", "12345"}};
+        IDBCommand::ParamsType create_params = { { "name", "Ruslan" }, { "password", "12345" } };
         create_user_command.execute(create_params);
     }
 
     {
         IDBCommand& delete_user_command = container->resolve<IDBCommand>("delete-user");
-        IDBCommand::ParamsType delete_params = { { "name", "Ruslan"}};
+        IDBCommand::ParamsType delete_params = { { "name", "Ruslan" } };
         delete_user_command.execute(delete_params);
     }
 

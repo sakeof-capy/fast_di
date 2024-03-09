@@ -1,7 +1,7 @@
 #ifndef DI_CONTAINERS_CREATEUSERCOMMAND_HPP
 #define DI_CONTAINERS_CREATEUSERCOMMAND_HPP
 
-#include "../IDBCommand.hpp"
+#include "database/command/IDBCommand.hpp"
 
 namespace Database::Command::User
 {
