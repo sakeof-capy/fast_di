@@ -9,26 +9,25 @@ using namespace Database::Command;
 
 int main()
 {
-    DIContainerBuilder builder{};
-    builder.register_singleton<User::CreateUserCommand>()
-                .as_interface<IDBCommand>()
-                .with_tag("create-user")
-                .done()
-           .register_singleton<User::DeleteUserCommand>()
-                .as_interface<IDBCommand>()
-                .with_tag("delete-user")
-                .done();
-
-    std::unique_ptr<DIContainer> container = builder.build();
-//    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
-//        //.register_singleton<Connection::PQXXConnectionHandler, Connection::ISQLConnectionHandler>()
-//        .register_singleton<User::CreateUserCommand, IDBCommand>("create-user")
-//        .register_singleton<User::DeleteUserCommand, IDBCommand>("delete-user")
-//        .build();
+//    DIContainerBuilder builder{};
+    std::unique_ptr<DIContainer> container = DIContainerBuilder{}
+        .register_transient<User::CreateUserCommand>()
+            .as_interface<IDBCommand>()
+            .with_tag("create-user")
+            .done()
+        .register_transient<User::DeleteUserCommand>()
+            .as_interface<IDBCommand>()
+            .with_tag("delete-user")
+            .done()
+        .build();
 
     {
         IDBCommand& create_user_command = container->resolve<IDBCommand>("create-user");
-        IDBCommand::ParamsType create_params = { { "name", "Ruslan" }, { "password", "12345" }, { "email", "non-linear@ukr.net"} };
+        IDBCommand::ParamsType create_params = {
+            { "name", "Ruslan" },
+            { "password", "12345" },
+            { "email", "non-linear@ukr.net"}
+        };
         create_user_command.execute(create_params);
     }
 
