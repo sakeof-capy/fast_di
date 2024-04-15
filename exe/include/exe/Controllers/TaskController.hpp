@@ -16,7 +16,7 @@ public:
         , logger_ { logger }
     {}
 
-    static TaskController_ create(TaskModel& model, IDatabase& database, ILogger& logger)
+    static TaskController_ create(TaskModel_& model, IDatabase& database, ILogger& logger)
     {
         return {model, database, logger};
     }
@@ -45,9 +45,9 @@ private:
     ILogger& logger_;
 };
 
-MakeInjectableAs(TaskController) Entity(TaskController_)
-With <
-        SingletonAsInterface(TaskController, TaskController_) ConstructedWith <TaskModel_&, IDatabase&, ILogger&> Injected
-     > AsInjectionRulesFor(TaskController)
+//MakeInjectableAs(TaskController) Entity(TaskController_)
+//With <
+//        SingletonAsInterface(TaskController, TaskController_) ConstructedWith <TaskModel_&, IDatabase&, ILogger&> Injected
+//     > AsInjectionRulesFor(TaskController)
 
 #endif //DI_CONTAINERS_TASKCONTROLLER_HPP

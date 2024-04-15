@@ -1,0 +1,15 @@
+#include "classic_di/GlobalDI.hpp"
+#include "FileLogger.hpp"
+#include <iostream>
+
+namespace DI
+{
+
+DI_SUBSCRIBED(FileLogger_)
+void subscribe_FileLogger_()
+{
+    GlobalDI::builder().register_singleton<::FileLogger_, ::ILogger>();
+    std::cout << "Registered FileLogger_" << std::endl;
+}
+
+}

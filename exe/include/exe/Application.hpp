@@ -58,6 +58,12 @@ public:
         user_controller_.handle_submit();
     }
 
+public:
+    static Application_ create(TaskController_& task_controller, UserController_& user_controller, ILogger& logger)
+    {
+        return { task_controller, user_controller, logger };
+    }
+
 private:
     static std::string extract_value(const std::string& prefix, const std::string& input)
     {
@@ -76,11 +82,11 @@ private:
 
 
 
-MakeInjectable(Application) Entity<Application_>::template
-Withh
-<
-    DISubscribe<SubscribeType::Singleton, Application, Application, TaskController_&, UserController_&, ILogger&>
-> AsInjectionRules;
+//MakeInjectable(Application) Entity<Application_>::template
+//Withh
+//<
+//    DISubscribe<SubscribeType::Singleton, Application, Application, TaskController_&, UserController_&, ILogger&>
+//> AsInjectionRules;
 
 //#define MakeInjectableAs(injectable_name) \
 //class injectable_name : public

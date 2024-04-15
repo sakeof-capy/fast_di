@@ -5,7 +5,7 @@
 #include "../Database/IDatabase.hpp"
 #include "../Logger/ILogger.hpp"
 
-#include "classic_di/DISubscribe.hpp"
+//#include "classic_di/DISubscribe.hpp"
 
 class UserController_
 {
@@ -34,15 +34,21 @@ public:
         database_.save_user(model_);
     }
 
+public:
+    static UserController_ create(UserModel_& model, IDatabase& database, ILogger& logger)
+    {
+        return { model, database, logger };
+    }
+
 private:
     UserModel_& model_;
     IDatabase& database_;
     ILogger& logger_;
 };
-
-MakeInjectableAs(UserController) Entity(UserController_)
-With <
-        SingletonAsInterface(UserController, UserController_) ConstructedWith <UserModel&, IDatabase&, ILogger&> Injected
-     > AsInjectionRulesFor(UserController)
+//
+//MakeInjectableAs(UserController) Entity(UserController_)
+//With <
+//        SingletonAsInterface(UserController, UserController_) ConstructedWith <UserModel&, IDatabase&, ILogger&> Injected
+//     > AsInjectionRulesFor(UserController)
 
 #endif //DI_CONTAINERS_USERCONTROLLER_HPP

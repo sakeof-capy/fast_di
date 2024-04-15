@@ -37,4 +37,6 @@ private:
     DIContainerBuilder builder_;
 };
 
+#define DI_SUBSCRIBED(Dependency)
+
 #endif //GLOBALDI_HPP_

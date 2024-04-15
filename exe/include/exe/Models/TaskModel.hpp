@@ -28,14 +28,21 @@ public:
         return executant_;
     }
 
+
+public:
+    static TaskModel_ create()
+    {
+        return {};
+    }
+
 private:
     std::string name_;
     std::string executant_;
 };
 
-MakeInjectableAs(TaskModel) Entity(TaskModel_)
-With <
-        TransientAsInterface(TaskModel, TaskModel_) ConstructedWith <> Injected
-     > AsInjectionRulesFor(TaskModel)
+//MakeInjectableAs(TaskModel) Entity(TaskModel_)
+//With <
+//        TransientAsInterface(TaskModel, TaskModel_) ConstructedWith <> Injected
+//     > AsInjectionRulesFor(TaskModel)
 
 #endif //DI_CONTAINERS_TASKMODEL_HPP

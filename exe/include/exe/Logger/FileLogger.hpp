@@ -16,11 +16,19 @@ public:
     {
         std::cout << "Logged to file: " << message << '\n';
     }
+
+public:
+
+public:
+    static FileLogger_ create()
+    {
+        return {};
+    }
 };
 
-MakeInjectableAs(FileLogger) Entity(FileLogger_)
-With <
-        SingletonAsInterface(FileLogger, ILogger) ConstructedWith <> Injected
-     > AsInjectionRulesFor(FileLogger)
+//MakeInjectableAs(FileLogger) Entity(FileLogger_)
+//With <
+//        SingletonAsInterface(FileLogger, ILogger) ConstructedWith <> Injected
+//     > AsInjectionRulesFor(FileLogger)
 
 #endif //DI_CONTAINERS_FILELOGGER_HPP

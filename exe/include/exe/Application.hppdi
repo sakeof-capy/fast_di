@@ -1,0 +1,16 @@
+#include "classic_di/GlobalDI.hpp"
+#include "Application.hpp"
+
+#include <iostream>
+
+namespace DI
+{
+
+DI_SUBSCRIBED(Application_)
+void subscribe_Application_()
+{
+    GlobalDI::builder().register_singleton<::Application_>();
+    std::cout << "Registered Application_" << std::endl;
+}
+
+}

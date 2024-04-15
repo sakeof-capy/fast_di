@@ -1,0 +1,24 @@
+#include "classic_di/GlobalDI.hpp"
+#include "TaskModel.hpp"
+#include "UserModel.hpp"
+
+#include <iostream>
+
+namespace DI
+{
+
+DI_SUBSCRIBED(TaskModel_)
+void subscribe_TaskModel_()
+{
+    GlobalDI::builder().register_transient<::TaskModel_>();
+    std::cout << "Registered TaskModel_" << std::endl;
+}
+
+DI_SUBSCRIBED(UserModel_)
+void subscribe_UserModel_()
+{
+    GlobalDI::builder().register_transient<::UserModel_>();
+    std::cout << "Registered UserModel_" << std::endl;
+}
+
+}

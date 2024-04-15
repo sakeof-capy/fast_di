@@ -29,13 +29,19 @@ public:
         std::cout << "Saved User to PostgreSQL DB: name=" << user.get_name() << ", password=" << user.get_password() << '\n';
     }
 
+public:
+    static PostgreSQLDatabase_ create(ILogger& logger)
+    {
+        return PostgreSQLDatabase_{ logger };
+    }
+
 private:
     ILogger& logger_;
 };
 
-MakeInjectableAs(PostgreSQLDatabase) Entity(PostgreSQLDatabase_)
-With <
-        SingletonAsInterface(PostgreSQLDatabase, IDatabase) ConstructedWith <ILogger&> Injected
-     > AsInjectionRulesFor(PostgreSQLDatabase)
+//MakeInjectableAs(PostgreSQLDatabase) Entity(PostgreSQLDatabase_)
+//With <
+//        SingletonAsInterface(PostgreSQLDatabase, IDatabase) ConstructedWith <ILogger&> Injected
+//     > AsInjectionRulesFor(PostgreSQLDatabase)
 
 #endif //DI_CONTAINERS_POSTGRESQLDATABASE_HPP

@@ -28,14 +28,20 @@ public:
         return password_;
     }
 
+public:
+    static UserModel_ create()
+    {
+        return {};
+    }
+
 private:
     std::string name_;
     std::string password_;
 };
 
-MakeInjectableAs(UserModel) Entity(UserModel_)
-With <
-        TransientAsInterface(UserModel, UserModel_) ConstructedWith <> Injected
-     > AsInjectionRulesFor(UserModel)
+//MakeInjectableAs(UserModel) Entity(UserModel_)
+//With <
+//        TransientAsInterface(UserModel, UserModel_) ConstructedWith <> Injected
+//     > AsInjectionRulesFor(UserModel)
 
 #endif //DI_CONTAINERS_USERMODEL_HPP

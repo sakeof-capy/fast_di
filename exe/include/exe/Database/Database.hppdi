@@ -1,0 +1,15 @@
+#include "classic_di/GlobalDI.hpp"
+#include "PostgreSQLDatabase.hpp"
+#include <iostream>
+
+namespace DI
+{
+
+DI_SUBSCRIBED(PostgreSQLDatabase_)
+void subscribe_PostgreSQLDatabase_()
+{
+    GlobalDI::builder().register_singleton<::PostgreSQLDatabase_, ::IDatabase>();
+    std::cout << "Registered PostgreSQLDatabase_" << std::endl;
+}
+
+}

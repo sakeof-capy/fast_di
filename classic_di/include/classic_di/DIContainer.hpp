@@ -208,7 +208,7 @@ private:
     TransientDependenciesMap transient_dependency_creators_;
     mutable std::vector<std::shared_ptr<void>> transient_instances;
 
-private:
+public:
     static constexpr Tag DEFAULT_TAG = "DEFAULT_TAG";
 };
 
