@@ -40,6 +40,13 @@ public:
         return RegistrationBuilder<LifeCycle::Transient, Dependency> { *this };
     }
 
+    template<typename Interceptor, typename Decoratee>
+    DIContainerBuilder& add_interceptor()
+    {
+        container_.add_interceptor<Interceptor>(typeid(Decoratee));
+        return *this;
+    }
+
     DIContainer build()
     {
         return container_;
@@ -57,7 +64,8 @@ private:
         container_.add_singleton_dependency(
             dependency_key,
             container_.produce_singleton_creator<Dependency>(std::move(dependency_tags)),
-            tag
+            tag,
+            typeid(Dependency)
         );
 
         return *this;
@@ -74,7 +82,8 @@ private:
         container_.add_transient_dependency(
             dependency_key,
             container_.produce_transient_creator<Dependency>(std::move(dependency_tags)),
-            tag
+            tag,
+            typeid(Dependency)
         );
 
         return *this;

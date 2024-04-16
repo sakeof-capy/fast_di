@@ -25,8 +25,8 @@ private:
     using Tag = std::string_view;
     using SingletonCreator = std::function<void*(const DIContainer&)>;
     using TransientCreator = std::function<std::shared_ptr<void>(const DIContainer&)>;
-    using TagsMappingSingletonVec = std::vector<std::pair<Tag, SingletonCreator>>;
-    using TagsMappingTransientVec = std::vector<std::pair<Tag, TransientCreator>>;
+    using TagsMappingSingletonVec = std::vector<std::tuple<Tag, SingletonCreator, std::type_index>>;
+    using TagsMappingTransientVec = std::vector<std::tuple<Tag, TransientCreator, std::type_index>>;
     using SingletonDependenciesMap = std::unordered_map<std::type_index, TagsMappingSingletonVec>;
     using TransientDependenciesMap = std::unordered_map<std::type_index, TagsMappingTransientVec>;
 
@@ -73,7 +73,7 @@ private:
         using MapIteratorType = typename DependenciesMap::const_iterator;
         using VecType = typename DependenciesMap::value_type::second_type;
         using VecIteratorType = typename VecType::const_iterator;
-        using Creator = typename VecType::value_type::second_type;
+        using Creator = std::tuple_element_t<1, typename VecType::value_type>;
 
         MapIteratorType found_dependency_pair = dependencies_map.find(typeid(Dependency));
 
@@ -87,13 +87,13 @@ private:
             found_mapping_vec.cbegin(),
             found_mapping_vec.cend(),
             [tag](const typename VecType::value_type& tag_pair) {
-                return tag_pair.first == tag;
+                return std::get<0>(tag_pair) == tag;
             }
         );
 
         if (found_tagged_pair != found_mapping_vec.cend())
         {
-            const Creator& found_creator = found_tagged_pair->second;
+            const Creator& found_creator = std::get<1>(*found_tagged_pair);
 
             if constexpr (std::same_as<Creator, SingletonCreator>)
             {
@@ -112,14 +112,14 @@ private:
     Dependency& create_singleton(const SingletonCreator& creator) const
     {
         void* ptr_to_singleton = creator(*this);
-        return *static_cast<Dependency*>(ptr_to_singleton);
+        return cast_to<Dependency>(ptr_to_singleton);
     }
 
     template<typename Dependency>
     Dependency& create_transient(const TransientCreator& creator) const
     {
         std::shared_ptr<void>& ptr_to_transient = transient_instances.emplace_back(creator(*this));
-        return *std::static_pointer_cast<Dependency>(ptr_to_transient);
+        return cast_to<Dependency>(ptr_to_transient);
     }
 
 private: // Producers for builder
@@ -128,7 +128,7 @@ private: // Producers for builder
     {
         return [dependency_tags = std::move(dependency_tags)](const DIContainer& self) mutable {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-            auto resolved_creator_args = self.ResolveCreatorArgs(creator_args_pack, std::move(dependency_tags));
+            auto resolved_creator_args = self.resolve_creator_args(creator_args_pack, std::move(dependency_tags));
             static Dependency instance = std::apply(Dependency::create, resolved_creator_args);
             return &instance;
         };
@@ -139,13 +139,13 @@ private: // Producers for builder
     {
         return [dependency_tags = std::move(dependency_tags)](const DIContainer& self) mutable {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-            auto resolved_creator_args = self.ResolveCreatorArgs(creator_args_pack, std::move(dependency_tags));
+            auto resolved_creator_args = self.resolve_creator_args(creator_args_pack, std::move(dependency_tags));
             return std::make_shared<Dependency>(std::apply(Dependency::create, resolved_creator_args));
         };
     }
 
     template<typename... ArgTypes>
-    auto ResolveCreatorArgs(TypeTraits::pack<ArgTypes...>, std::vector<Tag>&& dependency_tags) const
+    auto resolve_creator_args(TypeTraits::pack<ArgTypes...>, std::vector<Tag>&& dependency_tags) const
     {
         auto dependency_tag_iterator = dependency_tags.cbegin();
         return TypeTraits::map_to_tuple
@@ -161,24 +161,137 @@ private: // Producers for builder
     }
 
 private: // Map fillers for builder
-    void add_singleton_dependency(std::type_index dependency_key, SingletonCreator&& creator, Tag tag)
+    void add_singleton_dependency
+    (
+        std::type_index interface_key,
+        SingletonCreator&& creator,
+        Tag tag,
+        std::type_index dependency_key
+    )
     {
-        if (tag_exists(singleton_dependencies_, dependency_key, tag))
+        if (tag_exists(singleton_dependencies_, interface_key, tag))
         {
             throw std::runtime_error(std::string("Tag Already Exists."));
         }
         std::cout << "Registered singleton tag = " << tag << std::endl;
-        singleton_dependencies_[dependency_key].emplace_back( tag, std::move(creator));
+        singleton_dependencies_[interface_key].emplace_back(tag, std::move(creator), dependency_key);
     }
 
-    void add_transient_dependency(std::type_index dependency_key, TransientCreator&& creator, Tag tag)
+    void add_transient_dependency
+    (
+        std::type_index interface_key,
+        TransientCreator&& creator,
+        Tag tag,
+        std::type_index dependency_key
+    )
     {
-        if (tag_exists(singleton_dependencies_, dependency_key, tag))
+        if (tag_exists(singleton_dependencies_, interface_key, tag))
         {
             throw std::runtime_error(std::string("Tag Already Exists."));
         }
         std::cout << "Registered transient tag = " << tag << std::endl;
-        transient_dependency_creators_[dependency_key].emplace_back( tag, std::move(creator));
+        transient_dependency_creators_[interface_key].emplace_back( tag, std::move(creator), dependency_key);
+    }
+
+    template<typename Interceptor>
+    void add_interceptor(std::type_index decoratee_type)
+    {
+        std::string error_message = "Interception error:\n\t";
+
+        try
+        {
+            return add_interceptor_to_map<Interceptor>(singleton_dependencies_, decoratee_type);
+        }
+        catch (const std::runtime_error& err)
+        {
+            error_message += err.what();
+            error_message += "\n\t";
+        }
+
+        try
+        {
+            return add_interceptor_to_map<Interceptor>(transient_dependency_creators_, decoratee_type);
+        }
+        catch (const std::runtime_error& err)
+        {
+            error_message += err.what();
+        }
+
+        throw std::runtime_error(error_message);
+    }
+
+    template<typename Interceptor, typename DependenciesMap>
+    void add_interceptor_to_map(DependenciesMap& dependencies_map, std::type_index decoratee_type)
+    {
+        using MapIteratorType = typename DependenciesMap::iterator;
+        using VecType = typename DependenciesMap::value_type::second_type;
+        using Creator = std::tuple_element_t<1, typename VecType::value_type>;
+        using DecorateeType = TypeTraits::head_of_pack<TypeTraits::ParamPackOf<decltype(Interceptor::create)>>;
+
+        MapIteratorType found_dependency_pair = dependencies_map.find(decoratee_type);
+
+        if (found_dependency_pair != dependencies_map.end())
+        {
+            VecType& tags_mapping_vec = found_dependency_pair->second;
+            for (auto& [tag, creator, type_index] : tags_mapping_vec)
+            {
+                creator = [&creator](const DIContainer& self) {
+                    //return Interceptor { cast_to<DecorateeType>(creator(self)) };
+                    return creator(self);
+                };
+            }
+        }
+        else
+        {
+            for (auto& [interface_type_index, tags_mapping_vec] : dependencies_map)
+            {
+                for (auto& [tag, creator, type_index] : tags_mapping_vec)
+                {
+                    if (type_index == decoratee_type)
+                    {
+                        creator = [&creator](const DIContainer& self) {
+                            //return Interceptor { cast_to<DecorateeType>(creator(self)) };
+                            return creator(self);
+                        };
+                    }
+                }
+            }
+        }
+
+        throw std::runtime_error("Decoratee to intercept not found!");
+    }
+
+    template<typename Interceptor, typename Decoratee>
+    SingletonCreator decorate(SingletonCreator& creator)
+    {
+//        return [&creator](const DIContainer& self) {
+//            void* decoratee_ptr = creator(self);
+//            Decoratee& decoratee = cast_to<Decoratee>(decoratee_ptr);
+//            Interceptor
+//        };
+        return creator;
+    }
+
+    template<typename Interceptor, typename Decoratee>
+    TransientCreator decorate(TransientCreator& creator)
+    {
+        return [&creator](const DIContainer& self) {
+            std::shared_ptr<void> decoratee_ptr = creator(self);
+            Decoratee& decoratee = cast_to<Decoratee>(decoratee_ptr);
+            return std::make_shared<Interceptor>()
+        };
+    }
+
+    template<typename To>
+    static To& cast_to(void* ptr)
+    {
+        return *static_cast<To*>(ptr);
+    }
+
+    template<typename To>
+    static To& cast_to(std::shared_ptr<void>& ptr)
+    {
+        return *std::static_pointer_cast<To>(ptr);
     }
 
     template<typename DependenciesMap>
@@ -200,7 +313,7 @@ private: // Map fillers for builder
             found_tags_vector.cbegin(),
             found_tags_vector.cend(),
             [tag](const typename VecType::value_type& tag_pair) {
-                return tag_pair.first == tag;
+                return std::get<0>(tag_pair) == tag;
             }
         );
 

@@ -2,8 +2,9 @@
 #include <string_view>
 #include "classic_di/DIContainerBuilder.hpp"
 
-constexpr std::string_view DO_SOMETHING_RESULT = "do_something_result12r1r1";
-constexpr std::string_view DODO_RESULT = "dododoododododoodod";
+const std::string DO_SOMETHING_RESULT = "do_something_result12r1r1";
+const std::string DODO_RESULT = "dododoododododoodod";
+const std::string INTERCEPTION = "INTERCEPTED: ";
 
 class SomeInterface
 {
@@ -11,7 +12,31 @@ public:
     virtual ~SomeInterface() = default;
 
 public:
-    virtual std::string_view do_something() = 0;
+    virtual std::string do_something() = 0;
+};
+
+class SomeInterceptor : public SomeInterface
+{
+public:
+    explicit SomeInterceptor(SomeInterface& decoratee)
+        : decoratee_ { decoratee }
+    {}
+
+    static SomeInterceptor create(SomeInterface& decoratee)
+    {
+        return SomeInterceptor { decoratee };
+    }
+
+    ~SomeInterceptor() override = default;
+
+public:
+    std::string do_something() override
+    {
+        return INTERCEPTION + decoratee_.do_something();
+    }
+
+private:
+    SomeInterface& decoratee_;
 };
 
 class SomeDoer : public SomeInterface
@@ -20,7 +45,7 @@ public:
     ~SomeDoer() override = default;
 
 public:
-    std::string_view do_something() override
+    std::string do_something() override
     {
         return DO_SOMETHING_RESULT;
     }
@@ -86,6 +111,7 @@ TEST(BasicDITest, DI)
         .register_singleton<SomeDoer>()
             .as_interface<SomeInterface>()
             .done()
+        .add_interceptor<SomeInterceptor, SomeInterface>()
         .build();
 
     CommandUser& user = container.resolve<CommandUser>();

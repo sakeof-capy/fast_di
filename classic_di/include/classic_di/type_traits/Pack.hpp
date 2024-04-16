@@ -12,6 +12,18 @@ struct pack {};
 template<typename Pack>
 constexpr bool is_empty_pack = std::is_same_v<pack<>, Pack>;
 
+template<typename Pack>
+struct HeadOfPack;
+
+template<typename Type, typename... Types>
+struct HeadOfPack<pack<Type, Types...>>
+{
+    using type = Type;
+};
+
+template<typename Pack>
+using head_of_pack = typename HeadOfPack<Pack>::type;
+
 template<typename...>
 struct TupleFromPack;
 
