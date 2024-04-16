@@ -24,7 +24,7 @@ public:
 
 public:
     DIContainerBuilder()
-        : container_ { std::make_unique<DIContainer>() }
+        : container_ {}
     {}
 
 public:
@@ -40,18 +40,23 @@ public:
         return RegistrationBuilder<LifeCycle::Transient, Dependency> { *this };
     }
 
-    std::unique_ptr<DIContainer> build() &
+    DIContainer build()
     {
-        return std::make_unique<DIContainer>(*container_);
+        return container_;
     }
 
 private:
     template<typename Dependency>
-    DIContainerBuilder& register_singleton_impl(std::type_index dependency_key, Tag tag)
+    DIContainerBuilder& register_singleton_impl
+    (
+        std::type_index dependency_key,
+        Tag tag,
+        std::vector<Tag>&& dependency_tags
+    )
     {
-        container_->add_singleton_dependency(
+        container_.add_singleton_dependency(
             dependency_key,
-            container_->produce_singleton_creator<Dependency>(),
+            container_.produce_singleton_creator<Dependency>(std::move(dependency_tags)),
             tag
         );
 
@@ -59,11 +64,16 @@ private:
     }
 
     template<typename Dependency>
-    DIContainerBuilder& register_transient_impl(std::type_index dependency_key, Tag tag)
+    DIContainerBuilder& register_transient_impl
+    (
+        std::type_index dependency_key,
+        Tag tag,
+        std::vector<Tag>&& dependency_tags
+    )
     {
-        container_->add_transient_dependency(
+        container_.add_transient_dependency(
             dependency_key,
-            container_->produce_transient_creator<Dependency>(),
+            container_.produce_transient_creator<Dependency>(std::move(dependency_tags)),
             tag
         );
 
@@ -71,7 +81,7 @@ private:
     }
 
 private:
-    std::unique_ptr<DIContainer> container_;
+    DIContainer container_;
 
 private:
     template<LifeCycle LifeCycleType, typename Dependency>
@@ -87,9 +97,17 @@ public:
 public:
     explicit RegistrationBuilder(DIContainerBuilder& builder_reference)
         : builder_reference_ { builder_reference }
+        , dependency_tags_ { vec_default() }
         , dependency_key_ { typeid(Dependency) }
         , tag_ { DIContainer::DEFAULT_TAG }
     {}
+
+    static std::vector<Tag> vec_default()
+    {
+        using DependenciesPack = TypeTraits::ParamPackOf<decltype(Dependency::create)>;
+        std::size_t dependencies_count = TypeTraits::pack_size_v<DependenciesPack>;
+        return std::vector<Tag>(dependencies_count, DIContainer::DEFAULT_TAG);
+    }
 
 public:
     template<typename Interface>
@@ -106,7 +124,20 @@ public:
     }
 
     template<typename Interface>
-    RegistrationBuilder& with_dependency_tag(Tag tag);
+    RegistrationBuilder& with_dependency_tag(Tag tag)
+    {
+        using DependenciesPack = TypeTraits::ParamPackOf<decltype(Dependency::create)>;
+
+        if constexpr (!TypeTraits::pack_contains_v<Interface&, DependenciesPack>)
+        {
+            throw std::runtime_error("Trying to assign tag to an inexistent dependency.");
+        }
+
+        const std::size_t index_of_interface = TypeTraits::index_of_type_v<Interface&, DependenciesPack>;
+        dependency_tags_[index_of_interface] = tag;
+
+        return *this;
+    }
 
     DIContainerBuilder& done()
     {
@@ -116,19 +147,22 @@ public:
                 return builder_reference_.register_singleton_impl<Dependency>
                 (
                     dependency_key_,
-                    tag_
+                    tag_,
+                    std::move(dependency_tags_)
                 );
             case LifeCycle::Transient:
                 return builder_reference_.register_transient_impl<Dependency>
                 (
                     dependency_key_,
-                    tag_
+                    tag_,
+                    std::move(dependency_tags_)
                 );
         }
     }
 
 private:
     DIContainerBuilder& builder_reference_;
+    std::vector<Tag> dependency_tags_;
     std::type_index dependency_key_;
     Tag tag_;
 };

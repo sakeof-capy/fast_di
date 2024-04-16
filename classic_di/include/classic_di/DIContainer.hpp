@@ -23,8 +23,8 @@ class DIContainer
 {
 private:
     using Tag = std::string_view;
-    using SingletonCreator = std::function<void*()>;
-    using TransientCreator = std::function<std::shared_ptr<void>()>;
+    using SingletonCreator = std::function<void*(const DIContainer&)>;
+    using TransientCreator = std::function<std::shared_ptr<void>(const DIContainer&)>;
     using TagsMappingSingletonVec = std::vector<std::pair<Tag, SingletonCreator>>;
     using TagsMappingTransientVec = std::vector<std::pair<Tag, TransientCreator>>;
     using SingletonDependenciesMap = std::unordered_map<std::type_index, TagsMappingSingletonVec>;
@@ -109,47 +109,55 @@ private:
     }
 
     template<typename Dependency>
-    Dependency& create_singleton(const std::function<void*()>& creator) const
+    Dependency& create_singleton(const SingletonCreator& creator) const
     {
-        void* ptr_to_singleton = creator();
+        void* ptr_to_singleton = creator(*this);
         return *static_cast<Dependency*>(ptr_to_singleton);
     }
 
     template<typename Dependency>
-    Dependency& create_transient(const std::function<std::shared_ptr<void>()>& creator) const
+    Dependency& create_transient(const TransientCreator& creator) const
     {
-        std::shared_ptr<void>& ptr_to_transient = transient_instances.emplace_back(creator());
+        std::shared_ptr<void>& ptr_to_transient = transient_instances.emplace_back(creator(*this));
         return *std::static_pointer_cast<Dependency>(ptr_to_transient);
     }
 
 private: // Producers for builder
     template<typename Dependency>
-    SingletonCreator produce_singleton_creator() const
+    SingletonCreator produce_singleton_creator(std::vector<Tag>&& dependency_tags) const
     {
-        return [this]() {
+        return [dependency_tags = std::move(dependency_tags)](const DIContainer& self) mutable {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-            auto resolved_creator_args = ResolveCreatorArgs(creator_args_pack);
+            auto resolved_creator_args = self.ResolveCreatorArgs(creator_args_pack, std::move(dependency_tags));
             static Dependency instance = std::apply(Dependency::create, resolved_creator_args);
             return &instance;
         };
     }
 
     template<typename Dependency>
-    TransientCreator produce_transient_creator() const
+    TransientCreator produce_transient_creator(std::vector<Tag>&& dependency_tags) const
     {
-        return [this]() {
+        return [dependency_tags = std::move(dependency_tags)](const DIContainer& self) mutable {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-            auto resolved_creator_args = ResolveCreatorArgs(creator_args_pack);
+            auto resolved_creator_args = self.ResolveCreatorArgs(creator_args_pack, std::move(dependency_tags));
             return std::make_shared<Dependency>(std::apply(Dependency::create, resolved_creator_args));
         };
     }
 
     template<typename... ArgTypes>
-    auto ResolveCreatorArgs(TypeTraits::pack<ArgTypes...>) const
+    auto ResolveCreatorArgs(TypeTraits::pack<ArgTypes...>, std::vector<Tag>&& dependency_tags) const
     {
-        return TypeTraits::map_to_tuple(TypeTraits::pack<ArgTypes...>{}, [this]<typename Arg>() -> Arg& {
-            return resolve<std::remove_reference_t<Arg>>();
-        });
+        auto dependency_tag_iterator = dependency_tags.cbegin();
+        return TypeTraits::map_to_tuple
+        (
+            TypeTraits::pack<ArgTypes...>{},
+            [this, &dependency_tag_iterator]<typename Arg>() -> Arg& {
+                Tag dependency_tag = *dependency_tag_iterator;
+                Arg& resolved = resolve<std::remove_reference_t<Arg>>(dependency_tag);
+                ++dependency_tag_iterator;
+                return resolved;
+            }
+        );
     }
 
 private: // Map fillers for builder
