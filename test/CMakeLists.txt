@@ -22,6 +22,7 @@ target_link_libraries(
     tests
     GTest::gtest_main
     classic_di
+    fast_di
 )
 
 include(GoogleTest)
