@@ -2,12 +2,10 @@
 #define REGISTER_HPP_
 
 #include "../FunctionTypeTraits.hpp"
+#include "../ConfigPredicate.hpp"
 
-template<typename... Configs>
-class DIContainer;
-
-namespace FastDI::Static
-{
+//namespace FastDI::Static
+//{
 
 enum class RegistrationTypes
 {
@@ -18,18 +16,15 @@ template<RegistrationTypes RegistrationType, typename Dependency, typename... Ot
 class Register;
 
 template<typename Dependency, typename... OtherConfigs>
-class Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigs...>
-{
-public:
-
-};
+class Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigs...> {};
 
 template<typename Dependency, RegistrationTypes RegistrationType, typename... OtherConfigs>
-constexpr bool matches_dependency(Register<RegistrationType, Dependency, OtherConfigs...>&&)
-{
-    return true;
-}
+struct ConfigPredicate<
+    Dependency,
+    Register<RegistrationType, Dependency, OtherConfigs...>
+> : std::true_type
+{};
 
-}
+//}
 
 #endif //REGISTER_HPP_

@@ -16,30 +16,43 @@ struct IntContainer
     std::size_t i_;
 };
 
-namespace FastDI::Static
-{
+//namespace FastDI::Static
+//{
 
-template<typename Dependency, typename Config>
-constexpr bool matches_dependency(Config&&)
-{
-    return false;
-}
+template<typename Config>
+concept IsDIConfig = std::is_default_constructible_v<Config>;
 
-template<typename... Configs>
+template<IsDIConfig... Configs>
 class DIContainer
 {
 public:
     template<typename Dependency>
     constexpr Dependency resolve() const
     {
-        using Config = decltype(find_config<Dependency>());
-        static_assert(!std::is_void_v<Config>, "Config not found.");
-//        static_assert(std::same_as<Register<RegistrationTypes::SINGLETON, IntContainer>, Config>);
-        auto config = find_config<Dependency>();
-        return create(std::move(config));
+        using Utilities::TypeTraits::pack;
+        using Utilities::TypeTraits::pack_filter_t;
+        using Utilities::TypeTraits::pack_unpack_t;
+
+        using ConfigsMatchingTheDependencyPack = pack_filter_t<
+            pack<Configs...>,
+            ConfigPredicateCarrier<Dependency>::template Predicate
+        >;
+        static_assert(!std::same_as<pack<>, ConfigsMatchingTheDependencyPack>, "Dependency not registered.");
+
+        using ConfigMatchingTheDependency = pack_unpack_t<ConfigsMatchingTheDependencyPack>;
+        return create(ConfigMatchingTheDependency{});
     }
 
 private:
+    template<typename... ArgTypes>
+    constexpr auto resolve_creator_args(Utilities::TypeTraits::pack<ArgTypes...>) const
+    {
+        using namespace Utilities::TypeTraits;
+        return map_to_tuple(pack<ArgTypes...>{}, [this]<typename Arg>() -> Arg {
+            return resolve<std::remove_reference_t<Arg>>();
+        });
+    }
+
     template<typename Dependency>
     constexpr Dependency create(Register<RegistrationTypes::SINGLETON, Dependency>&&) const
     {
@@ -50,32 +63,13 @@ private:
         return instance;
     }
 
-    template<typename Dependency>
-    constexpr auto find_config() const
-    {
-        using namespace Utilities::TypeTraits;
-        return for_each(pack<Configs...>{}, []<typename Config>() {
-            if constexpr (matches_dependency<Dependency>(Config{})) {
-                return Config{};
-            }
-        });
-    }
 
-    template<typename... ArgTypes>
-    constexpr auto resolve_creator_args(Utilities::TypeTraits::pack<ArgTypes...>) const
-    {
-        using namespace Utilities::TypeTraits;
-        return map_to_tuple(pack<ArgTypes...>{}, [this]<typename Arg>() -> Arg {
-            return resolve<std::remove_reference_t<Arg>>();
-        });
-    }
 
 private:
-    template<RegistrationTypes RegistrationType, typename Dependency, typename... OtherConfigs>
-    friend class Register;
+    std::tuple<Configs...> configs_;
 };
 
 
-}
+//}
 
 #endif //DICONTAINER_HPP_

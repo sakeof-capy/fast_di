@@ -63,6 +63,18 @@ struct IndexOfType<Type, pack<TypeIter, Types...>>
 template<typename Type, typename Pack>
 constexpr std::size_t index_of_type_v = IndexOfType<Type, Pack>::value;
 
+template<typename Pack>
+struct PackUnpack;
+
+template<typename Type>
+struct PackUnpack<pack<Type>>
+{
+    using type = Type;
+};
+
+template<typename Pack>
+using pack_unpack_t = typename PackUnpack<Pack>::type;
+
 }
 
 

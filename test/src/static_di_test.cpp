@@ -64,6 +64,15 @@ public:
     static constexpr const char* DO_RESULT = "RESULT_OF_DO2222";
 };
 
+template<typename ToFind>
+struct Finder
+{
+    template<typename Type>
+    struct Predicate
+    {
+        static constexpr bool value = std::is_same_v<ToFind, Type>;
+    };
+};
 
 
 TEST(ConstexprDiTest, DI)
@@ -78,28 +87,36 @@ TEST(ConstexprDiTest, DI)
     ASSERT_EQ(dep2.do_something(), SomeDep2::DO_RESULT);
 
     using namespace FastDI::Static;
-    FastDI::Static::DIContainer
+    /*FastDI::Static::*/DIContainer
     <
         Register<RegistrationTypes::SINGLETON, SomeDep1>,
         Register<RegistrationTypes::SINGLETON, SomeDep2>,
         Register<RegistrationTypes::SINGLETON, IntContainer>
     > container;
 
+
     constexpr static auto some = container.resolve<IntContainer>();
     static_assert(some.i_ == 2u);
-//
-//    constexpr static auto depp2 = container.resolve<SomeDep2>();
 
-//    ASSERT_EQ(some.do_something(), SomeDep1::DO_RESULT);
-//    Register<RegistrationTypes::SINGLETON, IntContainer> reg;
-//    reg.create(container);
-
-using namespace Utilities::TypeTraits;
-    int r = for_each(pack<int, float>{}, []<typename T>() {
+    using namespace Utilities::TypeTraits;
+    constexpr static int r = for_each<int>(pack<int, float>{}, []<typename T>() {
         if constexpr (std::same_as<float, T>)
         {
             return 2;
         }
-    });
+    }).value();
+    static_assert(r == 2);
     ASSERT_EQ(r, 2);
+
+    using concatenated = pack_concatenate_t<pack<int>, pack<float>>;
+    static_assert(std::same_as<concatenated, pack<int, float>>);
+
+    using filtered = pack_filter_t<pack<void, int, void, int>, std::is_void>;
+    static_assert(std::same_as<filtered, pack<void, void>>);
+
+    using filtered = pack_filter_t<pack<void, int, void, int>, Finder<void>::Predicate>;
+    static_assert(std::same_as<filtered, pack<void, void>>);
+
+    using SomeConfig = Register<RegistrationTypes::SINGLETON, SomeDep1>;
+    static_assert(ConfigPredicateCarrier<SomeDep1>::template Predicate<SomeConfig>::value);
 }
