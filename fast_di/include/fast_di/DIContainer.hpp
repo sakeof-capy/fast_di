@@ -28,9 +28,12 @@ class DIContainer
 private:
     using SelfType = DIContainer<Configs...>;
 
+    template<typename T>
+    using remove_const_reference_t = std::remove_const_t<std::remove_reference_t<T>>;
+
 public:
     template<typename Dependency>
-    static constexpr const Dependency& resolve()
+    static constexpr const remove_const_reference_t<Dependency>& resolve()
     {
         using Utilities::TypeTraits::pack;
         using Utilities::TypeTraits::pack_filter_t;
@@ -39,7 +42,7 @@ public:
 
         using ConfigsMatchingTheDependencyPack = pack_filter_t<
             pack<Configs...>,
-            ConfigPredicateCarrier<Dependency>::template Predicate
+            ConfigPredicateCarrier<remove_const_reference_t<Dependency>>::template Predicate
         >;
 
         static_assert(!std::same_as<pack<>, ConfigsMatchingTheDependencyPack>, "Dependency not registered.");
@@ -55,7 +58,7 @@ public:
     {
         using namespace Utilities::TypeTraits;
         return map_to_tuple(pack<ArgTypes...>{}, []<typename Arg>() -> const Arg& {
-            return resolve<std::remove_reference_t<Arg>>();
+            return resolve<remove_const_reference_t<Arg>>();
         });
     }
 };

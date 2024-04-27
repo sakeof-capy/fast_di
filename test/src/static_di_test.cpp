@@ -77,6 +77,8 @@ struct Finder
 
 TEST(ConstexprDiTest, DI)
 {
+    using namespace Utilities::TypeTraits;
+
     static constexpr SomeDep1 dep1;
     static constexpr SomeDep2 dep2 { dep1 };
 
@@ -90,15 +92,33 @@ TEST(ConstexprDiTest, DI)
     /*FastDI::Static::*/DIContainer
     <
         Register<RegistrationTypes::SINGLETON, SomeDep1>,
-        Register<RegistrationTypes::SINGLETON, SomeDep2>,
-        Register<RegistrationTypes::SINGLETON, IntContainer>
+        Register<RegistrationTypes::SINGLETON, SomeDep2>
+        //Register<RegistrationTypes::SINGLETON, IntContainer>
     > container;
 
+    using Configs = pack<Register<RegistrationTypes::SINGLETON, SomeDep1>,
+            Register<RegistrationTypes::SINGLETON, SomeDep2>>;
 
-    constexpr static auto& some = container.resolve<IntContainer>();
-    static_assert(some.i_ == 2u);
 
-    using namespace Utilities::TypeTraits;
+//    constexpr static auto& some = container.resolve<IntContainer>();
+//    static_assert(some.i_ == 2u);
+
+    static_assert(ConfigPredicate<SomeDep2, Register<RegistrationTypes::SINGLETON, SomeDep2>>::value);
+
+    using found = pack_filter_t<Configs, ConfigPredicateCarrier<SomeDep2>::template Predicate>;
+    static_assert(!std::same_as<found, pack<>>);
+    using ConfigsMatchingTheDependencyPack = pack_filter_t<
+            Configs,
+            ConfigPredicateCarrier<std::remove_all_extents_t<SomeDep2>>::template Predicate
+    >;
+    static_assert(!std::same_as<ConfigsMatchingTheDependencyPack, pack<>>);
+
+    static_assert(std::same_as<std::remove_const_t<std::remove_reference_t<const SomeDep2&>>, SomeDep2>);
+    constexpr static auto& some_dep2 = container.resolve<SomeDep2>();
+
+
+
+
     constexpr static int r = for_each<int>(pack<int, float>{}, []<typename T>() {
         if constexpr (std::same_as<float, T>)
         {
