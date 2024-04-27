@@ -95,7 +95,7 @@ TEST(ConstexprDiTest, DI)
     > container;
 
 
-    constexpr static auto some = container.resolve<IntContainer>();
+    constexpr static auto& some = container.resolve<IntContainer>();
     static_assert(some.i_ == 2u);
 
     using namespace Utilities::TypeTraits;

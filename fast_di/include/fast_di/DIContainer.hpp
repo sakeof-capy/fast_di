@@ -11,7 +11,7 @@ struct IntContainer
     constexpr explicit IntContainer(std::size_t i) : i_ { i } {}
     static constexpr IntContainer create()
     {
-        return IntContainer(2);
+        return IntContainer(2u);
     }
     std::size_t i_;
 };
@@ -25,50 +25,40 @@ concept IsDIConfig = std::is_default_constructible_v<Config>;
 template<IsDIConfig... Configs>
 class DIContainer
 {
+private:
+    using SelfType = DIContainer<Configs...>;
+
 public:
     template<typename Dependency>
-    constexpr Dependency resolve() const
+    static constexpr const Dependency& resolve()
     {
         using Utilities::TypeTraits::pack;
         using Utilities::TypeTraits::pack_filter_t;
         using Utilities::TypeTraits::pack_unpack_t;
+        using Utilities::TypeTraits::index_of_type_v;
 
         using ConfigsMatchingTheDependencyPack = pack_filter_t<
             pack<Configs...>,
             ConfigPredicateCarrier<Dependency>::template Predicate
         >;
+
         static_assert(!std::same_as<pack<>, ConfigsMatchingTheDependencyPack>, "Dependency not registered.");
 
         using ConfigMatchingTheDependency = pack_unpack_t<ConfigsMatchingTheDependencyPack>;
-        return create(ConfigMatchingTheDependency{});
+        using WrappedConfig = ConfigWrapper<ConfigMatchingTheDependency, SelfType>;
+        return WrappedConfig::create();
     }
 
-private:
+public:
     template<typename... ArgTypes>
-    constexpr auto resolve_creator_args(Utilities::TypeTraits::pack<ArgTypes...>) const
+    static constexpr std::tuple<const ArgTypes&...> resolve_creator_args(Utilities::TypeTraits::pack<ArgTypes...>)
     {
         using namespace Utilities::TypeTraits;
-        return map_to_tuple(pack<ArgTypes...>{}, [this]<typename Arg>() -> Arg {
+        return map_to_tuple(pack<ArgTypes...>{}, []<typename Arg>() -> const Arg& {
             return resolve<std::remove_reference_t<Arg>>();
         });
     }
-
-    template<typename Dependency>
-    constexpr Dependency create(Register<RegistrationTypes::SINGLETON, Dependency>&&) const
-    {
-        auto creator_args_pack = Utilities::TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-        auto resolved_creator_args = resolve_creator_args(creator_args_pack);
-        //static constinit Dependency instance = std::apply(Dependency::create, resolved_creator_args);
-        Dependency instance = std::apply(Dependency::create, resolved_creator_args);
-        return instance;
-    }
-
-
-
-private:
-    std::tuple<Configs...> configs_;
 };
-
 
 //}
 
