@@ -12,18 +12,18 @@ enum class RegistrationTypes
     SINGLETON
 };
 
-template<RegistrationTypes RegistrationType, typename Dependency>
+template<RegistrationTypes RegistrationType, typename Dependency, typename... OtherConfigs>
 class Register;
 
-template<typename Dependency>
-class Register<RegistrationTypes::SINGLETON, Dependency>
+template<typename Dependency, typename... OtherConfigs>
+class Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigs...>
 {
 public:
     constexpr Register() = default;
 };
 
-template<typename Dependency, typename Container>
-class ConfigWrapper<Register<RegistrationTypes::SINGLETON, Dependency>, Container>
+template<typename Dependency, typename Container, typename... OtherConfigs>
+class ConfigWrapper<Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigs...>, Container>
 {
 private:
     using DependencyArgs = Utilities::TypeTraits::ParamPackOf<decltype(Dependency::create)>;
