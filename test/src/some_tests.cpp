@@ -74,7 +74,7 @@ private:
     SomeInterface& some_instance_;
 };
 
-TEST(BasicDITest, DI)
+TEST(DynamicDiTests, Container)
 {
     DIContainer container = DIContainerBuilder{}
         .register_singleton<CommandUser>()
