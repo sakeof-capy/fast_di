@@ -2,10 +2,10 @@
 #define REGISTER_HPP_
 
 #include "fast_di/FunctionTypeTraits.hpp"
-#include "fast_di/ConfigPredicate.hpp"
+#include "fast_di/configs/ConfigPredicate.hpp"
 
-//namespace FastDI::Static
-//{
+namespace FastDI::Static
+{
 
 enum class RegistrationTypes
 {
@@ -22,7 +22,7 @@ public:
     constexpr Register() = default;
 };
 
-//}
+}
 
 #include "fast_di/configs/register/ConfigWrapper.hpp"
 #include "fast_di/configs/register/ConfigPredicate.hpp"

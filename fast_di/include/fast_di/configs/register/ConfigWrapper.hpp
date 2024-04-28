@@ -3,6 +3,9 @@
 
 #include "fast_di/configs/Configs.hpp"
 
+namespace FastDI::Static
+{
+
 template<typename Dependency, typename OtherConfigsPack, typename Container, typename TypeBeingRetrieved>
 class ConfigWrapper<Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigsPack>, Container, TypeBeingRetrieved>
 {
@@ -16,8 +19,10 @@ public:
     }
 
 private:
-    static constexpr Dependency dependency = std::apply(Dependency::create, Container::resolve_creator_args(DependencyArgs{}));
+    static constexpr Dependency dependency = std::apply(Dependency::create,
+                                                        Container::resolve_creator_args(DependencyArgs{}));
 };
 
+}
 
 #endif //REGISTER_CONFIG_WRAPPER_HPP_

@@ -4,10 +4,13 @@
 #include "other_configs/AsInterface.hpp"
 #include "fast_di/TypeLists.hpp"
 
+namespace FastDI::Static
+{
+
 template<typename Dependency, RegistrationTypes RegistrationType, typename OtherConfigsPack>
 struct ConfigPredicate<
-        Dependency,
-        Register<RegistrationType, Dependency, OtherConfigsPack>
+    Dependency,
+    Register<RegistrationType, Dependency, OtherConfigsPack>
 > : std::true_type
 {};
 
@@ -21,5 +24,7 @@ struct ConfigPredicate<
         std::true_type
     >
 {};
+
+}
 
 #endif //REGISTER_CONFIG_PREDICATE_HPP_

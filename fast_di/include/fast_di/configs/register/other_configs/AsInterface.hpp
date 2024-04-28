@@ -5,8 +5,12 @@
 
 #include "fast_di/TypeLists.hpp"
 
+namespace FastDI::Static
+{
+
 template<typename Interface>
-struct AsInterface {};
+struct AsInterface
+{};
 
 template<typename Interface, typename OtherConfig>
 struct IsAsInterface : std::false_type
@@ -34,5 +38,7 @@ using FilterAllAsInterfaces = Utilities::TypeTraits::pack_filter_t<
     OtherConfigsPack,
     IsAsInterfaceCarrier<Interface>::template Predicate
 >;
+
+}
 
 #endif //ASINTERFACE_HPP_

@@ -9,7 +9,13 @@ struct IntContainerInterface
     constexpr virtual std::size_t get_i() const = 0;
 };
 
-struct IntContainer : IntContainerInterface
+struct IncrementorInterface
+{
+    constexpr virtual ~IncrementorInterface() = default;
+    constexpr virtual std::size_t increment() const = 0;
+};
+
+struct IntContainer : IntContainerInterface, IncrementorInterface
 {
     constexpr explicit IntContainer(std::size_t i) : i_ { i } {}
 
@@ -23,6 +29,11 @@ struct IntContainer : IntContainerInterface
     constexpr std::size_t get_i() const override
     {
         return i_;
+    }
+
+    constexpr std::size_t increment() const override
+    {
+        return i_ + 1;
     }
 
     std::size_t i_;

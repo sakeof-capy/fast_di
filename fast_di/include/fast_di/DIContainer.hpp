@@ -6,8 +6,8 @@
 #include "TypeLists.hpp"
 #include "fast_di/configs/register/Register.hpp"
 
-//namespace FastDI::Static
-//{
+namespace FastDI::Static
+{
 
 template<typename Config>
 concept IsDIConfig = std::is_default_constructible_v<Config>;
@@ -54,6 +54,6 @@ public:
     }
 };
 
-//}
+}
 
 #endif //DICONTAINER_HPP_

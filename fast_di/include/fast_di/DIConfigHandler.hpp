@@ -7,7 +7,6 @@ namespace FastDI::Static
 template<typename Config, typename TypeToResolve>
 class DIConfigHandler;
 
-
 }
 
 #endif //DICONFIGHANDLER_HPP_

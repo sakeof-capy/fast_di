@@ -3,6 +3,9 @@
 
 #include <type_traits>
 
+namespace FastDI::Static
+{
+
 template<typename Dependency, typename Config>
 struct ConfigPredicate : std::false_type
 {};
@@ -20,6 +23,8 @@ struct ConfigPredicateCarrier
     };
 };
 
-#include "configs/Configs.hpp"
+}
+
+#include "Configs.hpp"
 
 #endif //CONFIGPREDICATE_HPP_
