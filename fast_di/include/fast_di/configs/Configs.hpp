@@ -4,6 +4,6 @@
 template<typename Config, typename Container>
 class ConfigWrapper;
 
-#include "Register.hpp"
+#include "fast_di/configs/register/Register.hpp"
 
 #endif //CONFIGS_HPP_

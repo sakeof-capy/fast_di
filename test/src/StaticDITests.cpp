@@ -2,7 +2,7 @@
 
 #include "../include/test/entities/Decorator.hpp"
 #include "fast_di/DIContainer.hpp"
-#include "fast_di/configs/Register.hpp"
+#include "fast_di/configs/register/Register.hpp"
 #include "fast_di/TypeLists.hpp"
 
 TEST(StaticDiTests, Container)

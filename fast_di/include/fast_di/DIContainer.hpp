@@ -4,7 +4,7 @@
 #include <optional>
 #include "DIConfigHandler.hpp"
 #include "TypeLists.hpp"
-#include "configs/Register.hpp"
+#include "fast_di/configs/register/Register.hpp"
 
 struct IntContainer
 {
@@ -49,6 +49,7 @@ public:
 
         using ConfigMatchingTheDependency = pack_unpack_t<ConfigsMatchingTheDependencyPack>;
         using WrappedConfig = ConfigWrapper<ConfigMatchingTheDependency, SelfType>;
+
         return WrappedConfig::create();
     }
 

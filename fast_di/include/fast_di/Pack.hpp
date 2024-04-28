@@ -9,8 +9,10 @@ namespace Utilities::TypeTraits
 template<typename...>
 struct pack {};
 
+using EmptyPack = pack<>;
+
 template<typename Pack>
-constexpr bool is_empty_pack = std::is_same_v<pack<>, Pack>;
+constexpr bool is_empty_pack = std::is_same_v<EmptyPack, Pack>;
 
 template<typename...>
 struct TupleFromPack;
