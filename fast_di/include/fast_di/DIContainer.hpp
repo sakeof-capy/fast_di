@@ -6,16 +6,6 @@
 #include "TypeLists.hpp"
 #include "fast_di/configs/register/Register.hpp"
 
-struct IntContainer
-{
-    constexpr explicit IntContainer(std::size_t i) : i_ { i } {}
-    static constexpr IntContainer create()
-    {
-        return IntContainer(2u);
-    }
-    std::size_t i_;
-};
-
 //namespace FastDI::Static
 //{
 
@@ -48,7 +38,7 @@ public:
         static_assert(!std::same_as<pack<>, ConfigsMatchingTheDependencyPack>, "Dependency not registered.");
 
         using ConfigMatchingTheDependency = pack_unpack_t<ConfigsMatchingTheDependencyPack>;
-        using WrappedConfig = ConfigWrapper<ConfigMatchingTheDependency, SelfType>;
+        using WrappedConfig = ConfigWrapper<ConfigMatchingTheDependency, SelfType, Dependency>;
 
         return WrappedConfig::create();
     }
