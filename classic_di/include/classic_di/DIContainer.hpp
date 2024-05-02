@@ -128,7 +128,7 @@ private: // Producers for builder
     {
         return [dependency_tags = std::move(dependency_tags)](const DIContainer& self) mutable {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-            auto resolved_creator_args = self.ResolveCreatorArgs(creator_args_pack, std::move(dependency_tags));
+            auto resolved_creator_args = self.resolve_creator_args(creator_args_pack, std::move(dependency_tags));
             static Dependency instance = std::apply(Dependency::create, resolved_creator_args);
             return &instance;
         };
@@ -139,13 +139,13 @@ private: // Producers for builder
     {
         return [dependency_tags = std::move(dependency_tags)](const DIContainer& self) mutable {
             auto creator_args_pack = TypeTraits::ParamPackOf<decltype(Dependency::create)>{};
-            auto resolved_creator_args = self.ResolveCreatorArgs(creator_args_pack, std::move(dependency_tags));
+            auto resolved_creator_args = self.resolve_creator_args(creator_args_pack, std::move(dependency_tags));
             return std::make_shared<Dependency>(std::apply(Dependency::create, resolved_creator_args));
         };
     }
 
     template<typename... ArgTypes>
-    auto ResolveCreatorArgs(TypeTraits::pack<ArgTypes...>, std::vector<Tag>&& dependency_tags) const
+    auto resolve_creator_args(TypeTraits::pack<ArgTypes...>, std::vector<Tag>&& dependency_tags) const
     {
         auto dependency_tag_iterator = dependency_tags.cbegin();
         return TypeTraits::map_to_tuple
