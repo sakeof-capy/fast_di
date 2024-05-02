@@ -1,7 +1,7 @@
 #ifndef REGISTER_CONFIG_PREDICATE_HPP_
 #define REGISTER_CONFIG_PREDICATE_HPP_
 
-#include "other_configs/AsInterface.hpp"
+#include "other_configs/OtherConfigs.hpp"
 #include "fast_di/TypeLists.hpp"
 
 namespace FastDI::Static

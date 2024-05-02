@@ -4,6 +4,7 @@
 #include "../include/test/entities/IntContainer.hpp"
 #include "fast_di/DIContainer.hpp"
 #include "fast_di/configs/Configs.hpp"
+#include "fast_di/configs/register/other_configs/OtherConfigs.hpp"
 #include "fast_di/TypeLists.hpp"
 
 using Utilities::TypeTraits::pack;
@@ -13,6 +14,9 @@ using FastDI::Static::AsInterface;
 using FastDI::Static::WithConfigs;
 using FastDI::Static::config_predicate_v;
 using FastDI::Static::ConfigPredicateCarrier;
+using FastDI::Static::FilterAllWithTags;
+using FastDI::Static::WithTag;
+
 
 using DIContainer = FastDI::Static::DIContainer
 <
@@ -68,4 +72,27 @@ TEST(StaticDiTests, ConfigPredicateAsInterface)
     >;
 
     static_assert(config_predicate_v<Interface, SomeConfig>);
+}
+
+void f(const char* tag)
+{
+
+}
+
+TEST(StaticDiTests, FilterAllWithTags)
+{
+    using Configs = pack<
+            Register<RegistrationTypes::SINGLETON, Implementation>,
+            Register<RegistrationTypes::SINGLETON, Decorator>,
+            Register<
+                    RegistrationTypes::SINGLETON,
+                    IntContainer,
+                    WithConfigs<
+                            AsInterface<IntContainerInterface>,
+                            AsInterface<IncrementorInterface>
+                    >
+            >
+    >;
+//    using SomeType = X<"abcc">;
+//    using a = FilterAllWithTags<"asd", Configs>;
 }

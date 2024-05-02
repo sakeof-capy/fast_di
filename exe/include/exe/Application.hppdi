@@ -9,7 +9,7 @@ namespace DI
 DI_SUBSCRIBED(Application_)
 void subscribe_Application_()
 {
-    GlobalDI::builder().register_singleton<::Application_>();
+    GlobalDI::builder().register_singleton<::Application_>().done();
     std::cout << "Registered Application_" << std::endl;
 }
 

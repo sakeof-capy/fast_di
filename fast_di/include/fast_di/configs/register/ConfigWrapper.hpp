@@ -2,6 +2,7 @@
 #define REGISTER_CONFIG_WRAPPER_HPP_
 
 #include "fast_di/configs/Configs.hpp"
+#include "other_configs/WithTag.hpp"
 
 namespace FastDI::Static
 {
@@ -13,7 +14,7 @@ private:
     using DependencyArgs = Utilities::TypeTraits::ParamPackOf<decltype(Dependency::create)>;
 
 public:
-    static constexpr const TypeBeingRetrieved& create()
+    static constexpr const TypeBeingRetrieved& create(Tag tag)
     {
         return dependency;
     }

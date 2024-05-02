@@ -102,6 +102,7 @@ public:
         , tag_ { DIContainer::DEFAULT_TAG }
     {}
 
+private:
     static std::vector<Tag> vec_default()
     {
         using DependenciesPack = TypeTraits::ParamPackOf<decltype(Dependency::create)>;

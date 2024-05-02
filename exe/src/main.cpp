@@ -6,10 +6,12 @@
 int main()
 {
     subscribe_all_dependencies();
-    std::unique_ptr<DIContainer> container = GlobalDI::build_container();
+    DIContainer container = GlobalDI::build_container();
 
-    Application_& app = container->resolve<Application_>();
+    Application_& app = container.resolve<Application_>();
     app.run();
+
+    const std::type_info& typeInfo = typeid(int);
 
     return EXIT_SUCCESS;
 }

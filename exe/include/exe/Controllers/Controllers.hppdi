@@ -9,14 +9,14 @@ namespace DI
 DI_SUBSCRIBED(TaskController_)
 void subscribe_TaskController_()
 {
-    GlobalDI::builder().register_singleton<::TaskController_>();
+    GlobalDI::builder().register_singleton<::TaskController_>().done();
     std::cout << "Registered TaskController_" << std::endl;
 }
 
 DI_SUBSCRIBED(UserController_)
 void subscribe_UserController_()
 {
-    GlobalDI::builder().register_singleton<::UserController_>();
+    GlobalDI::builder().register_singleton<::UserController_>().done();
     std::cout << "Registered UserController_" << std::endl;
 }
 

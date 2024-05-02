@@ -2,6 +2,7 @@
 #define CONFIGS_HPP_
 
 #include "fast_di/TypeLists.hpp"
+#include "fast_di/Tag.hpp"
 
 namespace FastDI::Static
 {

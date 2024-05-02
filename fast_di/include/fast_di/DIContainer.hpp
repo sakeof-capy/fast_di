@@ -1,10 +1,8 @@
 #ifndef DICONTAINER_HPP_
 #define DICONTAINER_HPP_
 
-#include <optional>
-#include "DIConfigHandler.hpp"
 #include "TypeLists.hpp"
-#include "fast_di/configs/register/Register.hpp"
+#include "fast_di/configs/Configs.hpp"
 
 namespace FastDI::Static
 {
@@ -16,6 +14,9 @@ template<IsDIConfig... Configs>
 class DIContainer
 {
 private:
+    static constexpr Tag DEFAULT_TAG = "STATIC_DEFAULT_TAG";
+
+private:
     using SelfType = DIContainer<Configs...>;
 
     template<typename T>
@@ -23,7 +24,7 @@ private:
 
 public:
     template<typename Dependency>
-    static constexpr const remove_const_reference_t<Dependency>& resolve()
+    static constexpr const remove_const_reference_t<Dependency>& resolve(Tag tag = DEFAULT_TAG)
     {
         using Utilities::TypeTraits::pack;
         using Utilities::TypeTraits::pack_filter_t;
@@ -40,7 +41,7 @@ public:
         using ConfigMatchingTheDependency = pack_unpack_t<ConfigsMatchingTheDependencyPack>;
         using WrappedConfig = ConfigWrapper<ConfigMatchingTheDependency, SelfType, Dependency>;
 
-        return WrappedConfig::create();
+        return WrappedConfig::create(tag);
     }
 
 public:
@@ -52,6 +53,7 @@ public:
             return resolve<remove_const_reference_t<Arg>>();
         });
     }
+
 };
 
 }

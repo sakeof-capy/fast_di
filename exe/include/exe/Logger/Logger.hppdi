@@ -8,7 +8,7 @@ namespace DI
 DI_SUBSCRIBED(FileLogger_)
 void subscribe_FileLogger_()
 {
-    GlobalDI::builder().register_singleton<::FileLogger_, ::ILogger>();
+    GlobalDI::builder().register_singleton<::FileLogger_>().as_interface<::ILogger>().done();
     std::cout << "Registered FileLogger_" << std::endl;
 }
 

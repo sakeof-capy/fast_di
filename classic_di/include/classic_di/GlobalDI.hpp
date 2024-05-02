@@ -22,7 +22,7 @@ public:
         return get_instance().builder_;
     }
 
-    static std::unique_ptr<DIContainer> build_container()
+    static DIContainer build_container()
     {
         return builder().build();
     }
