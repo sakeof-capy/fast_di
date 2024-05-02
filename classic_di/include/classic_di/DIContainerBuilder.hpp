@@ -154,22 +154,23 @@ public:
 
     DIContainerBuilder& done()
     {
-        switch (LifeCycleType)
+        if constexpr (LifeCycleType == LifeCycle::Singleton)
         {
-            case LifeCycle::Singleton:
-                return builder_reference_.register_singleton_impl<Dependency>
-                (
-                    dependency_key_,
-                    tag_,
-                    std::move(dependency_tags_)
-                );
-            case LifeCycle::Transient:
-                return builder_reference_.register_transient_impl<Dependency>
-                (
-                    dependency_key_,
-                    tag_,
-                    std::move(dependency_tags_)
-                );
+            return builder_reference_.register_singleton_impl<Dependency>
+            (
+                dependency_key_,
+                tag_,
+                std::move(dependency_tags_)
+            );
+        }
+        else if (LifeCycleType == LifeCycle::Transient)
+        {
+            return builder_reference_.register_transient_impl<Dependency>
+            (
+                dependency_key_,
+                tag_,
+                std::move(dependency_tags_)
+            );
         }
     }
 
