@@ -140,6 +140,18 @@ public:
         return *this;
     }
 
+
+    template<std::size_t DependencyIndex>
+    RegistrationBuilder& with_dependency_tag_at(Tag tag)
+    {
+        using DependenciesPack = TypeTraits::ParamPackOf<decltype(Dependency::create)>;
+        static_assert(DependencyIndex < TypeTraits::pack_size_v<DependenciesPack>, "Invalid Dependency Index");
+
+        dependency_tags_[DependencyIndex] = tag;
+
+        return *this;
+    }
+
     DIContainerBuilder& done()
     {
         switch (LifeCycleType)

@@ -78,7 +78,7 @@ TEST(DynamicDiTests, Container)
 {
     DIContainer container = DIContainerBuilder{}
         .register_singleton<CommandUser>()
-            .with_dependency_tag<Dummy>("some-tag-dummy")
+            .with_dependency_tag_at<0>("some-tag-dummy")
             .done()
         .register_transient<Dummy>()
             .with_tag("some-tag-dummy")
