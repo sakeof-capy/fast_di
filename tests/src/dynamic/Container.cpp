@@ -31,6 +31,18 @@ public:
     }
 };
 
+class SomeDoer2 : public SomeInterface
+{
+public:
+    ~SomeDoer2() override = default;
+
+public:
+    std::string_view do_something() override
+    {
+        return DO_SOMETHING_RESULT;
+    }
+};
+
 class Dummy
 {
 public:
@@ -82,12 +94,18 @@ TEST(dynamic_di, container)
     DIContainer container = DIContainerBuilder{}
         .register_singleton<CommandUser>()
             .with_dependency_tag_at<0>("some-tag-dummy")
+            .with_dependency_tag_at<1>("some_tag")
             .done()
         .register_transient<Dummy>()
             .with_tag("some-tag-dummy")
             .done()
         .register_singleton<SomeDoer>()
             .as_interface<SomeInterface>()
+            .done()
+        .register_singleton<SomeDoer2>()
+            .as_interface<SomeInterface>()
+            .constructed_with<>()
+            .with_tag("some_tag")
             .done()
         .build();
 

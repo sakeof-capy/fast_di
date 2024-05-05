@@ -2,10 +2,28 @@
 #define REGISTRATIONBUILDER_HPP_
 
 #include "DIContainerBuilder.hpp"
+#include "WrapWithCreatorIfNotCreatable.hpp"
 #include "LifeCycle.hpp"
+
+
+
+
+#include <iostream>
 
 namespace fast_di::dynamic_di
 {
+
+
+template<typename T>
+auto has_create(int*) -> utilities::ParamPackOf<decltype(T::create)>
+{return {};}
+
+template<typename T>
+auto has_create(...) -> int
+{return 0;}
+
+template<typename T>
+constexpr bool has_create_v = !std::same_as<decltype(has_create<T>(nullptr)), int>;
 
 template<LifeCycle LifeCycleType, typename Dependency>
 class RegistrationBuilder
@@ -13,19 +31,46 @@ class RegistrationBuilder
 public:
     using Tag = typename DIContainerBuilder::Tag;
 
+private:
+    using RegistrationMethod = std::function<
+        DIContainerBuilder&(
+            std::type_index dependency_key,
+            Tag tag,
+            std::vector<Tag>&& dependency_tags
+        )
+    >;
+
+    using DependencyTagsVecProvider = std::function<std::vector<Tag>()>;
+
 public:
     explicit RegistrationBuilder(DIContainerBuilder& builder_reference)
         : builder_reference_ { builder_reference }
-        , dependency_tags_ { vec_default() }
+        , registration_method_ { produce_registration_method<Dependency>() }
+        , vec_provider_(get_vec_provider<Dependency>())
+        , dependency_tags_ { vec_provider_() }
         , dependency_key_ { typeid(Dependency) }
         , tag_ { DIContainer::DEFAULT_TAG }
     {}
 
 private:
-    static std::vector<Tag> vec_default()
+
+    template<typename TypeToBeInserted>
+    static DependencyTagsVecProvider get_vec_provider()
     {
-        using DependenciesPack = utilities::ParamPackOf<decltype(Dependency::create)>;
-        std::size_t dependencies_count = utilities::pack_size_v<DependenciesPack>;
+        return []() {
+            if constexpr (has_create_v<TypeToBeInserted>) {
+                const std::size_t dependencies_count = utilities::pack_size_v<utilities::ParamPackOf<decltype(TypeToBeInserted::create)>>;
+                return std::vector<Tag>(dependencies_count, DIContainer::DEFAULT_TAG);
+            }
+            else
+            {
+                return std::vector<Tag>{};
+            }
+        };
+    }
+
+    static std::vector<Tag> dependency_tags_vec(const std::size_t dependencies_count)
+    {
         return std::vector<Tag>(dependencies_count, DIContainer::DEFAULT_TAG);
     }
 
@@ -59,7 +104,6 @@ public:
         return *this;
     }
 
-
     template<std::size_t DependencyIndex>
     RegistrationBuilder& with_dependency_tag_at(Tag tag)
     {
@@ -71,28 +115,74 @@ public:
         return *this;
     }
 
+    template<typename... Args>
+    RegistrationBuilder& constructed_with()
+    {
+        using TypeToBeInserted = wrapper::WrapWithCreatorIfNotCreatable<Dependency, Args...>;
+        registration_method_ = produce_registration_method<TypeToBeInserted>();
+        dependency_tags_ = get_vec_provider<TypeToBeInserted>()();
+
+        return *this;
+    }
+
     DIContainerBuilder& done()
     {
-        if constexpr (LifeCycleType == LifeCycle::Singleton)
+        return registration_method_(
+            dependency_key_,
+            tag_,
+            std::move(dependency_tags_)
+        );
+    }
+
+private:
+    template<typename TypeToBeInserted>
+    RegistrationMethod produce_registration_method()
+    {
+        if constexpr (has_create_v<TypeToBeInserted>)
         {
-            return builder_reference_.register_singleton_impl<Dependency>(
-                dependency_key_,
-                tag_,
-                std::move(dependency_tags_)
-            );
+            DIContainerBuilder& builder_reference = builder_reference_;
+
+            return [&builder_reference] (
+                std::type_index dependency_key,
+                Tag tag,
+                std::vector<Tag>&& dependency_tags
+            ) -> DIContainerBuilder& {
+                if constexpr (LifeCycleType == LifeCycle::Singleton)
+                {
+                    return builder_reference.register_singleton_impl<TypeToBeInserted>(
+                        dependency_key,
+                        tag,
+                        std::move(dependency_tags)
+                    );
+                }
+                else
+                {
+                    return builder_reference.register_transient_impl<TypeToBeInserted>(
+                        dependency_key,
+                        tag,
+                        std::move(dependency_tags)
+                    );
+                }
+            };
         }
-        else if (LifeCycleType == LifeCycle::Transient)
+        else
         {
-            return builder_reference_.register_transient_impl<Dependency>(
-                dependency_key_,
-                tag_,
-                std::move(dependency_tags_)
-            );
+            return [] (
+                std::type_index dependency_key,
+                Tag tag,
+                std::vector<Tag>&& dependency_tags
+            ) -> DIContainerBuilder& {
+                throw std::runtime_error("Trying to register a type without create");
+            };
         }
+
+
     }
 
 private:
     DIContainerBuilder& builder_reference_;
+    RegistrationMethod registration_method_;
+    DependencyTagsVecProvider vec_provider_;
     std::vector<Tag> dependency_tags_;
     std::type_index dependency_key_;
     Tag tag_;
