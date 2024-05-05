@@ -74,10 +74,10 @@ private:
     SomeInterface& some_instance_;
 };
 
-using fast_di::dynamic::DIContainer;
-using fast_di::dynamic::DIContainerBuilder;
+using fast_di::dynamic_di::DIContainer;
+using fast_di::dynamic_di::DIContainerBuilder;
 
-TEST(DynamicDiTests, Container)
+TEST(dynamic_di, container)
 {
     DIContainer container = DIContainerBuilder{}
         .register_singleton<CommandUser>()

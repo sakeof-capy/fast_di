@@ -13,7 +13,7 @@
 #include "fast_di/utilities/FunctionTypeTraits.hpp"
 #include "fast_di/utilities/TypeLists.hpp"
 
-namespace fast_di::dynamic
+namespace fast_di::dynamic_di
 {
 
 class DIContainerBuilder;

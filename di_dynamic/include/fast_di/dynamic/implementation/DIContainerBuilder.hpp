@@ -9,7 +9,7 @@
 #include "DIContainer.hpp"
 #include "LifeCycle.hpp"
 
-namespace fast_di::dynamic
+namespace fast_di::dynamic_di
 {
 
 template<LifeCycle LifeCycleType, typename Dependency>

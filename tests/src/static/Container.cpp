@@ -13,7 +13,6 @@ using fast_di::static_di::WithConfigs;
 using fast_di::static_di::config_predicate_v;
 using fast_di::static_di::ConfigPredicateCarrier;
 
-
 using DIContainer = fast_di::static_di::DIContainer
 <
     Register<RegistrationTypes::SINGLETON, Implementation>,
@@ -28,19 +27,19 @@ using DIContainer = fast_di::static_di::DIContainer
     >
 >;
 
-TEST(StaticDiTests, BasicRetrieval)
+TEST(static_di, basic_retrieval)
 {
     constexpr static auto& some = DIContainer::resolve<IntContainer>();
     static_assert(some.i_ == IntContainer::DEFAULT_VALUE);
 }
 
-TEST(StaticDiTests, CompositionRetrieval)
+TEST(static_di, composition_retrieval)
 {
     constexpr static auto& some_dep2 = DIContainer::resolve<Decorator>();
     static_assert(some_dep2.do_something() == Decorator::DO_RESULT);
 }
 
-TEST(StaticDiTests, InterfaceRetrieval)
+TEST(static_di, retrieval_with_interface)
 {
     constexpr static const IntContainerInterface& int_container = DIContainer::resolve<IntContainerInterface>();
     static_assert(int_container.get_i() == IntContainer::DEFAULT_VALUE);
@@ -49,7 +48,7 @@ TEST(StaticDiTests, InterfaceRetrieval)
     static_assert(incrementor.increment() == IntContainer::DEFAULT_VALUE + 1u);
 }
 
-TEST(StaticDiTests, ConfigPredicate)
+TEST(static_di, config_predicate_basic_verification)
 {
     static_assert(config_predicate_v<Decorator, Register<RegistrationTypes::SINGLETON, Decorator>>);
 
@@ -57,38 +56,15 @@ TEST(StaticDiTests, ConfigPredicate)
     static_assert(ConfigPredicateCarrier<Implementation>::template Predicate<SomeConfig>::value);
 }
 
-TEST(StaticDiTests, ConfigPredicateAsInterface)
+TEST(static_di, config_predicate_interface_verification)
 {
     using SomeConfig = Register<
-    RegistrationTypes::SINGLETON,
-    Implementation,
-    WithConfigs<
-        AsInterface<Interface>
-    >
+        RegistrationTypes::SINGLETON,
+        Implementation,
+        WithConfigs<
+            AsInterface<Interface>
+        >
     >;
 
     static_assert(config_predicate_v<Interface, SomeConfig>);
-}
-
-void f(const char* tag)
-{
-
-}
-
-TEST(StaticDiTests, FilterAllWithTags)
-{
-    using Configs = pack<
-    Register<RegistrationTypes::SINGLETON, Implementation>,
-    Register<RegistrationTypes::SINGLETON, Decorator>,
-    Register<
-        RegistrationTypes::SINGLETON,
-        IntContainer,
-        WithConfigs<
-        AsInterface<IntContainerInterface>,
-    AsInterface<IncrementorInterface>
-    >
-    >
-    >;
-//    using SomeType = X<"abcc">;
-//    using a = FilterAllWithTags<"asd", Configs>;
 }
