@@ -171,7 +171,6 @@ private: // Map fillers for builder
         {
             throw std::runtime_error(std::string("Tag Already Exists."));
         }
-        std::cout << "Registered singleton tag = " << tag << std::endl;
         singleton_dependencies_[dependency_key].emplace_back(tag, std::move(creator));
     }
 
@@ -184,7 +183,6 @@ private: // Map fillers for builder
         {
             throw std::runtime_error(std::string("Tag Already Exists."));
         }
-        std::cout << "Registered transient tag = " << tag << std::endl;
         transient_dependency_creators_[dependency_key].emplace_back(tag, std::move(creator));
     }
 
