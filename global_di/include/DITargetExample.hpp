@@ -1,6 +1,0 @@
-#ifndef SUBSCRIBEFILECOMPILER_HPP_
-#define SUBSCRIBEFILECOMPILER_HPP_
-
-void subscribe_all_dependencies();
-
-#endif //SUBSCRIBEFILECOMPILER_HPP_
