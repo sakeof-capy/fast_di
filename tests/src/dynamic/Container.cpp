@@ -66,10 +66,10 @@ public:
     {}
 
 public:
-    static CommandUser create(Dummy& dummy, SomeInterface& some_instance)
-    {
-        return CommandUser { dummy, some_instance };
-    }
+//    static CommandUser create(Dummy& dummy, SomeInterface& some_instance)
+//    {
+//        return CommandUser { dummy, some_instance };
+//    }
 
     std::string_view use_command()
     {
@@ -95,6 +95,7 @@ TEST(dynamic_di, container)
         .register_singleton<CommandUser>()
             .with_dependency_tag_at<0>("some-tag-dummy")
             .with_dependency_tag_at<1>("some_tag")
+            .constructed_with<Dummy&, SomeInterface&>()
             .done()
         .register_transient<Dummy>()
             .with_tag("some-tag-dummy")
@@ -104,8 +105,8 @@ TEST(dynamic_di, container)
             .done()
         .register_singleton<SomeDoer2>()
             .as_interface<SomeInterface>()
-            .constructed_with<>()
             .with_tag("some_tag")
+            .constructed_with<>()
             .done()
         .build();
 
