@@ -12,7 +12,13 @@ endif()
 
 target_include_directories(${LIBRARY_NAME} INTERFACE
     $<BUILD_INTERFACE:
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/${LIBRARY_NAME}>
-    $<INSTALL_INTERFACE:include/>
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/public
+    $<INSTALL_INTERFACE:include/public/>
 )
+
+set(EXECUTABLE_NAME global_di_aggregator)
+
+file(GLOB_RECURSE SOURCES src/global_di_aggregator/*.cpp)
+add_executable(${EXECUTABLE_NAME} ${SOURCES})
+
+target_include_directories(${EXECUTABLE_NAME} PRIVATE "include/fast_di/global/private/global_di_aggregator")
