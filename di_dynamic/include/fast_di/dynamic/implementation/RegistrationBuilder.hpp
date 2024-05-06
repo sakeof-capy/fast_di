@@ -48,7 +48,7 @@ public:
     }
 
     template<std::size_t DependencyIndex>
-    RegistrationBuilder& with_dependency_tag_at(Tag tag)
+    RegistrationBuilder& with_tag_of_dependency_at(Tag tag)
     {
         dependency_tags_[DependencyIndex] = tag;
         return *this;

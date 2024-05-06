@@ -91,10 +91,9 @@ using fast_di::dynamic_di::DIContainerBuilder;
 
 TEST(dynamic_di, container)
 {
-    DIContainer container = DIContainerBuilder{}
-        .register_singleton<CommandUser>()
-            .with_dependency_tag_at<0>("some-tag-dummy")
-            .with_dependency_tag_at<1>("some_tag")
+    DIContainer container = DIContainerBuilder {}.register_singleton<CommandUser>().with_tag_of_dependency_at<0>(
+        "some-tag-dummy"
+    ).with_tag_of_dependency_at<1>("some_tag")
             .constructed_with<Dummy&, SomeInterface&>()
             .done()
         .register_transient<Dummy>()
