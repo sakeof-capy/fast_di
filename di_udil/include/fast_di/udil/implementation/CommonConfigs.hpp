@@ -19,7 +19,7 @@ struct Register
         {}
 
 #ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
-        using StaticNativeConfig = FromCommonConfig<LifeCycleType, Dependency, InnerConfigs...>;
+        using StaticNativeConfig = hidden::FromCommonConfig<LifeCycleType, Dependency, InnerConfigs...>;
 #endif
 
     public:

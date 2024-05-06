@@ -6,6 +6,7 @@
 
 #ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
 #include "implementation/StaticUDIL.hpp"
+#include "implementation/StaticConfigs.hpp"
 #else
 #include "implementation/DynamicUDIL.hpp"
 #endif
