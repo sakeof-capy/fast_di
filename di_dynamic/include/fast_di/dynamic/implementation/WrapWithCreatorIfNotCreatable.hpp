@@ -1,7 +1,6 @@
 #ifndef WRAPWITHCREATORIFNOTCREATABLE_HPP_
 #define WRAPWITHCREATORIFNOTCREATABLE_HPP_
 
-
 namespace fast_di::dynamic_di::wrapper
 {
 

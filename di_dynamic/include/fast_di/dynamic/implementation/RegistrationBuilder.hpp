@@ -1,29 +1,13 @@
 #ifndef REGISTRATIONBUILDER_HPP_
 #define REGISTRATIONBUILDER_HPP_
 
+#include "fast_di/utilities/FunctionTypeTraits.hpp"
 #include "DIContainerBuilder.hpp"
 #include "WrapWithCreatorIfNotCreatable.hpp"
 #include "LifeCycle.hpp"
 
-
-
-
-#include <iostream>
-
 namespace fast_di::dynamic_di
 {
-
-
-template<typename T>
-auto has_create(int*) -> utilities::ParamPackOf<decltype(T::create)>
-{return {};}
-
-template<typename T>
-auto has_create(...) -> int
-{return 0;}
-
-template<typename T>
-constexpr bool has_create_v = !std::same_as<decltype(has_create<T>(nullptr)), int>;
 
 template<LifeCycle LifeCycleType, typename Dependency>
 class RegistrationBuilder
@@ -40,40 +24,14 @@ private:
         )
     >;
 
-    using DependencyTagsVecProvider = std::function<std::vector<Tag>()>;
-
 public:
     explicit RegistrationBuilder(DIContainerBuilder& builder_reference)
         : builder_reference_ { builder_reference }
         , registration_method_ { produce_registration_method<Dependency>() }
-        , vec_provider_(get_vec_provider<Dependency>())
-        , dependency_tags_2 { vec_provider_() }
         , dependency_tags_{}
         , dependency_key_ { typeid(Dependency) }
         , tag_ { DIContainer::DEFAULT_TAG }
     {}
-
-private:
-
-    template<typename TypeToBeInserted>
-    static DependencyTagsVecProvider get_vec_provider()
-    {
-        return []() {
-            if constexpr (has_create_v<TypeToBeInserted>) {
-                const std::size_t dependencies_count = utilities::pack_size_v<utilities::ParamPackOf<decltype(TypeToBeInserted::create)>>;
-                return std::vector<Tag>(dependencies_count, DIContainer::DEFAULT_TAG);
-            }
-            else
-            {
-                return std::vector<Tag>{};
-            }
-        };
-    }
-
-    static std::vector<Tag> dependency_tags_vec(const std::size_t dependencies_count)
-    {
-        return std::vector<Tag>(dependencies_count, DIContainer::DEFAULT_TAG);
-    }
 
 public:
     template<typename Interface>
@@ -92,11 +50,7 @@ public:
     template<std::size_t DependencyIndex>
     RegistrationBuilder& with_dependency_tag_at(Tag tag)
     {
-//        using DependenciesPack = utilities::ParamPackOf<decltype(Dependency::create)>;
-//        static_assert(DependencyIndex<utilities::pack_size_v<DependenciesPack>, "Invalid Dependency Index");
-
         dependency_tags_[DependencyIndex] = tag;
-
         return *this;
     }
 
@@ -122,7 +76,7 @@ private:
     template<typename TypeToBeInserted>
     RegistrationMethod produce_registration_method()
     {
-        if constexpr (has_create_v<TypeToBeInserted>)
+        if constexpr (utilities::create_static_method_exists_and_is_unique_v<TypeToBeInserted>)
         {
             DIContainerBuilder& builder_reference = builder_reference_;
 
@@ -131,12 +85,21 @@ private:
                 Tag tag,
                 std::map<std::size_t, Tag>&& dependency_tags
             ) -> DIContainerBuilder& {
-                std::size_t size = utilities::pack_size_v<utilities::ParamPackOf<decltype(TypeToBeInserted::create)>>;
+                const std::size_t size = utilities::pack_size_v<
+                    utilities::ParamPackOf<decltype(TypeToBeInserted::create)>
+                >;
                 std::vector<Tag> dependency_tags_vector(size, DIContainer::DEFAULT_TAG);
 
-                for (const auto& [index, tagg] : dependency_tags)
+                for (const auto& [index, dependency_tag] : dependency_tags)
                 {
-                    dependency_tags_vector[index] = tagg;
+                    if (index >= dependency_tags_vector.size())
+                    {
+                        std::string error_message = "Index " + std::to_string(index) +
+                            " is not a valid dependency index.";
+                        throw std::runtime_error(error_message);
+                    }
+
+                    dependency_tags_vector[index] = dependency_tag;
                 }
 
                 if constexpr (LifeCycleType == LifeCycle::Singleton)
@@ -164,18 +127,14 @@ private:
                 Tag tag,
                 std::map<std::size_t, Tag>&& dependency_tags
             ) -> DIContainerBuilder& {
-                throw std::runtime_error("Trying to register a type without create");
+                throw std::runtime_error("Trying to register a type without create static method.");
             };
         }
-
-
     }
 
 private:
     DIContainerBuilder& builder_reference_;
     RegistrationMethod registration_method_;
-    DependencyTagsVecProvider vec_provider_;
-    std::vector<Tag> dependency_tags_2;
     std::map<std::size_t, Tag> dependency_tags_;
     std::type_index dependency_key_;
     Tag tag_;
