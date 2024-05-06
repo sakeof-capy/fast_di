@@ -12,8 +12,8 @@ endif()
 
 target_include_directories(${LIBRARY_NAME} INTERFACE
     $<BUILD_INTERFACE:
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/public
-    $<INSTALL_INTERFACE:include/public/>
+    ${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include/>
 )
 
 set(EXECUTABLE_NAME global_di_aggregator)
