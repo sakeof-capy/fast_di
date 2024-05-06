@@ -4,6 +4,8 @@ project(fast_di)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(FAST_DI_ENABLE_GLOBAL_STATIC_DI "Enable Static Di" ON)
+
 add_subdirectory(di_utilities)
 add_subdirectory(di_static)
 add_subdirectory(di_dynamic)

@@ -2,13 +2,14 @@
 #define COMMONCONFIGS_HPP_
 
 #include "fast_di/utilities/Pack.hpp"
+#include "fast_di/static/implementation/configs/Configs.hpp"
 #include <tuple>
 
 namespace fast_di::udil
 {
 
-template<typename Dependency>
-struct RegisterSingleton
+template<LifeCycle LifeCycleType, typename Dependency>
+struct Register
 {
     template<typename... InnerConfigs>
     struct WithConfigs
@@ -17,29 +18,20 @@ struct RegisterSingleton
             : inner_configs_{ inner_configs... }
         {}
 
+#ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
+        using StaticNativeConfig = FromCommonConfig<LifeCycleType, Dependency, InnerConfigs...>;
+#endif
+
     public:
         std::tuple<InnerConfigs...> inner_configs_;
     };
 };
 
-// Inner Configs
+template<typename Dependency>
+using RegisterSingleton = Register<LifeCycle::SINGLETON, Dependency>;
 
-template<typename Interface>
-struct AsInterface {};
-
-struct WithTag
-{
-    const char* tag;
-};
-
-template<std::size_t Index>
-struct WithTagOfDependencyAt
-{
-    const char* tag;
-};
-
-template<typename... Args>
-struct ConstructedWith {};
+template<typename Dependency>
+using RegisterTransient = Register<LifeCycle::TRANSIENT, Dependency>;
 
 }
 

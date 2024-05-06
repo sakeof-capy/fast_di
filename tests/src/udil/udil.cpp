@@ -1,10 +1,17 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "fast_di/udil/UDIL.hpp"
-//#include "../../../di_udil/include/fast_di/udil/UDIL.hpp"
+#include "fast_di/udil/FastDI.hpp"
+#include "fast_di/udil/implementation/StaticUDIL.hpp"
+
+
+#include <type_traits>
+
+
+
 
 TEST(udil, basic)
 {
+
     using namespace fast_di::udil;
     auto reg = RegisterSingleton<int>::WithConfigs{
         AsInterface<double>{},
@@ -12,6 +19,14 @@ TEST(udil, basic)
         WithTagOfDependencyAt<0> { "some_other_tag" },
         ConstructedWith<int&, double&>{}
     };
+    using real_native = fast_di::static_di::Register<
+        fast_di::static_di::RegistrationTypes::SINGLETON,
+        int,
+        fast_di::utilities::pack<fast_di::static_di::AsInterface<double>, int, int, int>
+    >;
+    using static_native = typename decltype(reg)::StaticNativeConfig;
+    static_assert(std::same_as<static_native, real_native>);
+//    using native = ToStaticNativeConfig<decltype(reg)>;
     auto reg_inner = reg.inner_configs_;
     auto as_interface = std::get<0>(reg_inner);
     auto with_tag = std::get<1>(reg_inner);

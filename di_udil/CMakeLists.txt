@@ -1,6 +1,6 @@
 set(LIBRARY_NAME udil_di)
 add_library(${LIBRARY_NAME} INTERFACE)
-target_link_libraries(${LIBRARY_NAME} INTERFACE utilities_di)
+target_link_libraries(${LIBRARY_NAME} INTERFACE utilities_di static_di)
 
 if(FAST_DI_ENABLE_GLOBAL_STATIC_DI)
     message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is defined; providing static UDIL...")
