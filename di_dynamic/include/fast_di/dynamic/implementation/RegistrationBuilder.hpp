@@ -1,6 +1,7 @@
 #ifndef REGISTRATIONBUILDER_HPP_
 #define REGISTRATIONBUILDER_HPP_
 
+#include <map>
 #include "fast_di/utilities/FunctionTypeTraits.hpp"
 #include "DIContainerBuilder.hpp"
 #include "WrapWithCreatorIfNotCreatable.hpp"
