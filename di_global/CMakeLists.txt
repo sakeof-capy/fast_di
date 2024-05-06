@@ -2,11 +2,11 @@ set(LIBRARY_NAME global_di)
 add_library(${LIBRARY_NAME} INTERFACE)
 
 if(FAST_DI_ENABLE_GLOBAL_STATIC_DI)
-    message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is defined; linking global static...")
+    message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is defined; linking to static global_di...")
     target_compile_definitions(${LIBRARY_NAME} INTERFACE -DFAST_DI_ENABLE_GLOBAL_STATIC_DI)
     target_link_libraries(${LIBRARY_NAME} INTERFACE static_di)
 else()
-    message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is not defined; linking global dynamic...")
+    message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is not defined; linking dynamic global_di...")
     target_link_libraries(${LIBRARY_NAME} INTERFACE dynamic_di)
 endif()
 

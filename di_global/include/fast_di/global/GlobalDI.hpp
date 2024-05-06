@@ -1,8 +1,7 @@
 #ifndef GLOBALDI_HPP_
 #define GLOBALDI_HPP_
 
-#ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
-#else
+#ifndef FAST_DI_ENABLE_GLOBAL_STATIC_DI
 
 #include "fast_di/dynamic/FastDI.hpp"
 #include <memory>
@@ -42,7 +41,7 @@ private:
     dynamic_di::DIContainerBuilder builder_;
 };
 
-#define DI_SUBSCRIBER_FOR(Dependency) \
+#define DI_DYNAMIC_SUBSCRIBER_FOR(Dependency) \
 void subscribe_##Dependency()
 
 }

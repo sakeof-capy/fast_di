@@ -25,6 +25,7 @@ target_link_libraries(
     utilities_di
     dynamic_di
     static_di
+    udil_di
     global_di
 )
 
