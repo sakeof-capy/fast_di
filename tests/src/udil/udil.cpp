@@ -22,7 +22,12 @@ TEST(udil, basic)
     using real_native = fast_di::static_di::Register<
         fast_di::static_di::RegistrationTypes::SINGLETON,
         int,
-        fast_di::utilities::pack<fast_di::static_di::AsInterface<double>, int, int, int>
+        fast_di::static_di::WithConfigs<
+            fast_di::static_di::AsInterface<double>,
+            fast_di::static_di::WithTag,
+            fast_di::static_di::WithTagOfDependencyAt<0>,
+            fast_di::static_di::ConstructedWith<int&, double&>
+        >
     >;
     using static_native = typename decltype(reg)::StaticNativeConfig;
     static_assert(std::same_as<static_native, real_native>);

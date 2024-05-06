@@ -9,7 +9,13 @@ namespace fast_di::udil
 constexpr fast_di::static_di::RegistrationTypes to_native_static_registration_type(
     const LifeCycle life_cycle
 ) {
-    return fast_di::static_di::RegistrationTypes::SINGLETON;
+    switch (life_cycle)
+    {
+        case LifeCycle::SINGLETON:
+            return fast_di::static_di::RegistrationTypes::SINGLETON;
+        case LifeCycle::TRANSIENT:
+            return fast_di::static_di::RegistrationTypes::TRANSIENT;
+    }
 }
 
 template<typename InnerConfig>
@@ -22,6 +28,24 @@ template<typename Interface>
 struct ToNativeStaticConfig<AsInterface<Interface>>
 {
     using type = static_di::AsInterface<Interface>;
+};
+
+template<>
+struct ToNativeStaticConfig<WithTag>
+{
+    using type = static_di::WithTag;
+};
+
+template<std::size_t Index>
+struct ToNativeStaticConfig<WithTagOfDependencyAt<Index>>
+{
+    using type = static_di::WithTagOfDependencyAt<Index>;
+};
+
+template<typename... Args>
+struct ToNativeStaticConfig<ConstructedWith<Args...>>
+{
+    using type = static_di::ConstructedWith<Args...>;
 };
 
 template<typename InnerConfig>

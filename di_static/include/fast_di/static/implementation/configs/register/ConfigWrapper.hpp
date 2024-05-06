@@ -6,8 +6,8 @@
 namespace fast_di::static_di
 {
 
-template<typename Dependency, typename OtherConfigsPack, typename Container, typename TypeBeingRetrieved>
-class ConfigWrapper<Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigsPack>, Container, TypeBeingRetrieved>
+template<RegistrationTypes Singleton, typename Dependency, typename OtherConfigsPack, typename Container, typename TypeBeingRetrieved>
+class ConfigWrapper<Register<Singleton, Dependency, OtherConfigsPack>, Container, TypeBeingRetrieved>
 {
 private:
     using DependencyArgs = utilities::ParamPackOf<decltype(Dependency::create)>;

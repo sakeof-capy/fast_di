@@ -9,18 +9,16 @@ namespace fast_di::static_di
 
 enum class RegistrationTypes
 {
-    SINGLETON
+    SINGLETON,
+    TRANSIENT,
 };
 
-template<RegistrationTypes RegistrationType, typename Dependency, typename OtherConfigsPack = utilities::pack<>>
-class Register;
-
-template<typename Dependency, typename OtherConfigsPack>
-class Register<RegistrationTypes::SINGLETON, Dependency, OtherConfigsPack>
-{
-public:
-    constexpr Register() = default;
-};
+template<
+    RegistrationTypes RegistrationType,
+    typename Dependency,
+    typename OtherConfigsPack = utilities::pack<>
+>
+class Register{};
 
 }
 
