@@ -19,9 +19,36 @@ struct Implementor : Interface
     }
 };
 
+static constexpr std::tuple a = {
+    1, 2, 3
+};
+
+static constexpr std::tuple b = {
+    4, 5, 6
+};
+
+static constexpr std::tuple c = {
+    7, 8, 9
+};
+
+using namespace fast_di::udil;
+
+static constexpr std::tuple configss = {
+    RegisterTransient<Implementor>::WithConfigs{
+        AsInterface<Interface>{},
+        WithTag{ "some_tag" },
+        ConstructedWith<>{}
+    }
+};
+
+TEST(udil, tuple_merging)
+{
+    static constexpr auto cat = std::tuple_cat(a, b, c);
+    static_assert(cat == std::tuple {1,2,3,4,5,6,7,8,9});
+}
+
 TEST(udil, form_container)
 {
-    using namespace fast_di::udil;
 
     std::tuple configs = {
         RegisterTransient<Implementor>::WithConfigs{
