@@ -1,5 +1,5 @@
-#ifndef LIFECYCLE_HPP_
-#define LIFECYCLE_HPP_
+#ifndef LIFECYCLE_UDIL_HPP_
+#define LIFECYCLE_UDIL_HPP_
 
 namespace fast_di::udil
 {
@@ -12,4 +12,4 @@ enum class LifeCycle
 
 }
 
-#endif //LIFECYCLE_HPP_
+#endif //LIFECYCLE_UDIL_HPP_

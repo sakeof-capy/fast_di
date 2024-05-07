@@ -1,12 +1,14 @@
 set(LIBRARY_NAME udil_di)
 add_library(${LIBRARY_NAME} INTERFACE)
-target_link_libraries(${LIBRARY_NAME} INTERFACE utilities_di static_di)
+target_link_libraries(${LIBRARY_NAME} INTERFACE utilities_di)
 
 if(FAST_DI_ENABLE_GLOBAL_STATIC_DI)
     message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is defined; providing static UDIL...")
     target_compile_definitions(${LIBRARY_NAME} INTERFACE -DFAST_DI_ENABLE_GLOBAL_STATIC_DI)
+    target_link_libraries(${LIBRARY_NAME} INTERFACE static_di)
 else()
     message("FAST_DI_ENABLE_GLOBAL_STATIC_DI is not defined; providing dynamic UDIL...")
+    target_link_libraries(${LIBRARY_NAME} INTERFACE dynamic_di)
 endif()
 
 target_include_directories(${LIBRARY_NAME} INTERFACE

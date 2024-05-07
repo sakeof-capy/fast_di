@@ -21,6 +21,14 @@ struct Register
 #ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
         using StaticNativeConfig = hidden::FromCommonConfig<LifeCycleType, Dependency, InnerConfigs...>;
 #endif
+        static constexpr LifeCycle LifeCycleTypeValue = LifeCycleType;
+        using DependencyType = Dependency;
+        using InnerConfigsPack = utilities::pack<InnerConfigs...>;
+
+        const std::tuple<InnerConfigs...>& inner_configs() const
+        {
+            return inner_configs_;
+        }
 
     public:
         std::tuple<InnerConfigs...> inner_configs_;

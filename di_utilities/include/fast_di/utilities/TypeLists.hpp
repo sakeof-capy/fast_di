@@ -182,6 +182,23 @@ constexpr auto map_to_tuple(Pack<TypeList...>&&, Mapper&& mapper) //-> std::tupl
     return Private::map_to_tuple_impl(pack<TypeList...>{}, std::forward<Mapper>(mapper), EmptyTupleType{});
 }
 
+namespace detail
+{
+template<typename T, typename F, int... Is>
+void
+for_each(T&& t, F f, std::integer_sequence<int, Is...>)
+{
+    auto l = { (f(std::get<Is>(t)), 0)... };
+}
+} // namespace detail
+
+template<typename... Ts, typename F>
+void
+for_each_in_tuple(std::tuple<Ts...> const& t, F f)
+{
+    detail::for_each(t, f, std::make_integer_sequence<int, sizeof...(Ts)>());
+}
+
 }
 
 #endif //DI_CONTAINERS_TYPELISTS_HPP

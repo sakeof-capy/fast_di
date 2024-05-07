@@ -1,5 +1,5 @@
-#ifndef FASTDI_HPP_
-#define FASTDI_HPP_
+#ifndef FASTDI_STATIC_HPP_
+#define FASTDI_STATIC_HPP_
 
 #include "implementation/configs/Configs.hpp"
 #include "implementation/DIContainer.hpp"

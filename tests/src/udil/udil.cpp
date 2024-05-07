@@ -1,13 +1,39 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "fast_di/udil/FastDI.hpp"
-#include "fast_di/udil/implementation/StaticUDIL.hpp"
-
 
 #include <type_traits>
 
+struct Interface
+{
+    virtual ~Interface() = default;
+    virtual int well_done() const = 0;
+};
 
+struct Implementor : Interface
+{
+    ~Implementor() override = default;
+    virtual int well_done() const override
+    {
+        return 3;
+    }
+};
 
+TEST(udil, form_container)
+{
+    using namespace fast_di::udil;
+
+    std::tuple configs = {
+        RegisterTransient<Implementor>::WithConfigs{
+            AsInterface<Interface>{},
+            WithTag{ "some_tag" },
+            ConstructedWith<>{}
+        }
+    };
+    auto container = fast_di::udil::form_di_container(configs);
+    Interface& impl = container.resolve<Interface>("some_tag");
+    ASSERT_EQ(impl.well_done(), 3);
+}
 
 TEST(udil, basic)
 {
@@ -19,6 +45,8 @@ TEST(udil, basic)
         WithTagOfDependencyAt<0> { "some_other_tag" },
         ConstructedWith<int&, double&>{}
     };
+
+#ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
     using real_native = fast_di::static_di::Register<
         fast_di::static_di::RegistrationTypes::SINGLETON,
         int,
@@ -31,7 +59,8 @@ TEST(udil, basic)
     >;
     using static_native = typename decltype(reg)::StaticNativeConfig;
     static_assert(std::same_as<static_native, real_native>);
-//    using native = ToStaticNativeConfig<decltype(reg)>;
+#endif
+
     auto reg_inner = reg.inner_configs_;
     auto as_interface = std::get<0>(reg_inner);
     auto with_tag = std::get<1>(reg_inner);
