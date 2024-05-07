@@ -12,6 +12,10 @@ struct Interface
 
 struct Implementor : Interface
 {
+    constexpr static Implementor create()
+    {
+        return {};
+    }
     ~Implementor() override = default;
     virtual int well_done() const override
     {
@@ -58,7 +62,7 @@ TEST(udil, form_container)
         }
     };
     auto container = fast_di::udil::form_di_container(configs);
-    Interface& impl = container.resolve<Interface>("some_tag");
+    const DI_RESOLVED Interface& impl = container.resolve<Interface>();
     ASSERT_EQ(impl.well_done(), 3);
 }
 

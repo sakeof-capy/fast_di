@@ -1,9 +1,13 @@
 #ifndef COMMONCONFIGS_HPP_
 #define COMMONCONFIGS_HPP_
 
-#include "fast_di/utilities/Pack.hpp"
+#ifdef FAST_DI_ENABLE_GLOBAL_STATIC_DI
 #include "fast_di/static/implementation/configs/Configs.hpp"
+#endif
+
+#include "fast_di/utilities/Pack.hpp"
 #include <tuple>
+
 
 namespace fast_di::udil
 {

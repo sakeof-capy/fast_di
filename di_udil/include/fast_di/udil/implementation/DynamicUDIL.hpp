@@ -2,7 +2,7 @@
 #define DYNAMICUDIL_HPP_
 
 #include <tuple>
-
+#include <cassert>
 #include "fast_di/dynamic/FastDI.hpp"
 
 namespace fast_di::udil
@@ -28,6 +28,12 @@ auto form_di_container(std::tuple<Configs...> configs)
 
     return builder.build();
 }
+
+#define DI_CONSTEXPR
+#define DI_RESOLVED
+#define DI_DYNAMIC_RESOLVED
+#define DI_ASSERT(Condition) assert(Condition)
+#define DI_DYNAMIC_ASSERT(Condition) DI_ASSERT(Condition)
 
 }
 
