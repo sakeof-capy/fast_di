@@ -13,7 +13,7 @@ public:
 
     void process_single_unit(const ProcessedUnitType& hppdi_file_path) override
     {
-        const FileSystem::FileContentType DI_SUBSCRIBE_MARK = "DI_SUBSCRIBER_FOR(";
+        const FileSystem::FileContentType DI_SUBSCRIBE_MARK = "DI_DYNAMIC_SUBSCRIBER_FOR(";
         DelimFileReader tokenizer(hppdi_file_path, "\n", 20u);
 
         aggregee_.include(hppdi_file_path);

@@ -2,7 +2,6 @@
 #define GLOBALDI_HPP_
 
 #ifndef FAST_DI_ENABLE_GLOBAL_STATIC_DI
-#else
 
 #include "fast_di/dynamic/FastDI.hpp"
 #include <memory>
