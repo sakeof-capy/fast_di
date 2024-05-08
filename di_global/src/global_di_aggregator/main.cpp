@@ -25,6 +25,13 @@ const std::string CPP_DEFAULT = CAUTION;
 
 void write_all(const PathType& file, const FileSystem::FileContentType& content)
 {
+    PathType parent_directory = file.parent_path();
+
+    if (!std::filesystem::exists(parent_directory))
+    {
+        std::filesystem::create_directories(parent_directory);
+    }
+
     std::ofstream outputFile(file);
 
     if (outputFile.is_open())
