@@ -24,8 +24,6 @@ target_link_libraries(
     GTest::gtest_main
     utilities_di
     dynamic_di
-    static_di
-    udil_di
     global_di
 )
 
