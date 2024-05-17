@@ -20,7 +20,6 @@ static constexpr Result ExpectedResultOf = ResultHolder::EXPECTED_RESULT;
 namespace fast_di::benchmarks::entity
 {
 
-
 struct Interface
 {
 public:

@@ -8,12 +8,6 @@ using fast_di::dynamic_di::DIContainer;
 namespace fast_di::benchmarks
 {
 
-template<typename T>
-static bool verify(T& entity)
-{
-    return entity.method() == ExpectedResultOf<T>;
-}
-
 void single_singleton_registration_bench(benchmark::State& state)
 {
     for (auto _ : state)
