@@ -10,6 +10,4 @@ add_subdirectory(di_utilities)
 add_subdirectory(di_dynamic)
 add_subdirectory(di_global)
 add_subdirectory(tests)
-add_subdirectory(dependencies/benchmark)
-add_subdirectory(benchmarks)
 
