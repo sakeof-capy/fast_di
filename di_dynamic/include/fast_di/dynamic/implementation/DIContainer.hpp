@@ -1,6 +1,7 @@
 #ifndef DI_CONTAINER_HPP_
 #define DI_CONTAINER_HPP_
 
+#include <algorithm>
 #include <unordered_map>
 #include <functional>
 #include <vector>
