@@ -14,7 +14,7 @@ using FileCharType = typename FileContentType::value_type;
 
 }
 
-#if defined(_WIN32) && defined(UNICODE)
+#if defined(_WIN32) && !defined(UNICODE)
     #define USE_WIDE_CHAR_PATH
     #define TO_PATH_STR(str) L##str
 #else
