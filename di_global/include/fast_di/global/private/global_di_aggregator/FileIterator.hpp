@@ -11,9 +11,15 @@ class FileIterator
 private:
     using IteratorType = std::filesystem::recursive_directory_iterator;
 public:
-    using PathType = FileSystem::PathType;
-    using PathStringType = typename PathType::string_type;
-    using RegexType = std::conditional_t<std::is_same_v<PathStringType, std::wstring>, std::wregex, std::regex>;
+    using PathType = typename FileSystem::PathType;
+    using PathStringType = typename FileSystem::PathStringType;
+
+#ifdef USE_WIDE_CHAR_PATH
+    using RegexType = std::wregex;
+#else
+    using RegexType = std::regex;
+#endif 
+
 public:
     FileIterator(const PathType& folder_path, const PathStringType& regex);
 
@@ -30,7 +36,3 @@ private:
 };
 
 #endif // !FILE_ITERATOR_HPP_
-
-
-
-

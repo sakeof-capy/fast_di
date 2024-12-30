@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    FileIterator file_iterator { root, L"\\w+\\.hppdi$"};
+    FileIterator file_iterator { root, TO_PATH_STR("\\w+\\.hppdi$")};
 
     auto aggregator = [&mode]() -> std::unique_ptr<IDataAggregator> {
         if (mode == "dynamic") {
